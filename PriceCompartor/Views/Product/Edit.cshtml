@@ -1,0 +1,42 @@
+﻿@model Product
+
+@{
+    ViewData["Title"] = "Update Product";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div class="row">
+    <form asp-action="Edit">
+        <input type="hidden" asp-asp-for="Id" />
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label class="control-label">Category</label>
+                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories">
+                    <option disabled selected>--Select Category--</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-success">Back to List</a>
+            </div>
+        </div>
+    </form>
+</div>
+

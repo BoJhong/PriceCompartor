@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<PriceCompartor.Models.SalesLeadEntity>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Sales Leads";
 }
 
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary btn-sm">Create New Sales Lead</a>
 </p>
 <table class="table">
     <thead>
