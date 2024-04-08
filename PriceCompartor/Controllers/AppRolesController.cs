@@ -27,6 +27,7 @@ namespace PriceCompartor.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(IdentityRole model)
         {
             if (!_roleManager.RoleExistsAsync(model.Name).GetAwaiter().GetResult())

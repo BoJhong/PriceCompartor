@@ -20,3 +20,33 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.card:hover {
+    border-color: #78c2ad;
+}
+
+.card {
+    flex: 1 1 auto;
+}
+
+.card a {
+    text-decoration: none;
+}
+
+.table > tbody > tr > td {
+    vertical-align: middle;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title-truncation {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-align: left;
+    overflow: hidden;
+}

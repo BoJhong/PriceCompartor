@@ -1,8 +1,84 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model List<Product>
+@{
+    ViewData["Title"] = "首頁";
+    List<Category>? cateogories = (List<Category>?)ViewData["Categories"];
+
+    Pager pager = new Pager();
+
+    int pageNo = 0;
+
+    if (ViewBag.Pager != null)
+    {
+        pager = ViewBag.pager;
+        pageNo = pager.CurrentPage;
+    }
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    </div>
+
+    @if (cateogories != null && cateogories.Any())
+    {
+        @foreach (var category in cateogories)
+        {
+            <div>
+                @Html.ActionLink(@category.Name, "Index", "Cat", new { id = category.Id }, new { @class = $"" })
+            </div>
+        }
+    }
+
+    <div class="row flex-center">
+        @if (cateogories != null && Model.Any())
+        {
+            @foreach (var product in Model!)
+            {
+                string imageUrl = !string.IsNullOrEmpty(product.ImageUrl) ? product.ImageUrl : "https://media.istockphoto.com/id/1409329028/zh/%E5%90%91%E9%87%8F/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=UNoD6tnZhsUwykY-JjiLeIePaay0YbVM6P9XxrE-fZo=";
+                <div class="card col-md-5 col-lg-3 col-xl-2 p-0">
+                    <a href=@product.Link>
+                        <img src=@imageUrl class="card-img-top object-fit-cover" style="aspect-ratio: 1/1;">
+                        <div class="card-body px-2">
+                            <div class="card-title title-truncation" style="font-size: 0.9rem; height: 2.5rem;">
+                                @product.Name
+                            </div>
+                            @if (!string.IsNullOrEmpty(product.Description))
+                            {
+                                <p class="card-text">@product.Description</p>
+                            }
+                            <img src="@Url.Action("GetPlatformImage",new { id=product.PlatformId})" width="24" height="24" class="object-fit-cover" />
+                            <div class="text-danger fw-bold">@product.Price.ToString("C0")</div>
+                            <div class="text-primary" style="font-size: 0.8rem;">總銷量>@product.Sales</div>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+    </div>
+    @if (pager.TotalPages > 0)
+    {
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+            <li class="page-item">
+                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-page="1">«</a>
+            </li>
+            <li class="page-item">
+                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-page="@(pager.CurrentPage - 1)">‹</a>
+            </li>
+            @for (var pge = pager.StartPage; pge <= pager.EndPage; pge++)
+            {
+                <li class="page-item @(pge == pager.CurrentPage ? "active" : "")">
+                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-page="@pge">@pge</a>
+                </li>
+            }
+            <li class="page-item">
+                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-page="@(pager.CurrentPage + 1)">›</a>
+            </li>
+            <li class="page-item">
+                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-page="@(pager.TotalPages)">»</a>
+            </li>
+        </ul>
+    </nav>
+    }
 </div>

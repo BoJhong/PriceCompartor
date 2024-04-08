@@ -2,11 +2,13 @@
 
 @{
     ViewData["Title"] = "Products";
+    Layout = "_Layout_Manager";
 }
 
 <h1>@ViewData["Title"]</h1>
 <p>
     <a asp-action="Create" class="btn btn-primary btn-sm">Create New Product</a>
+    <a asp-action="Purge" class="btn btn-danger btn-sm">Purge All Products</a>
 </p>
 <table class="table table-hover">
     <thead>
@@ -15,10 +17,13 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Quantity)
+                @Html.DisplayNameFor(model => model.Sales)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Categories!.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Platforms!.Name)
             </th>
             <th></th>
         </tr>
@@ -33,10 +38,13 @@
                         @Html.DisplayFor(model => product.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(model => product.Quantity)
+                        @Html.DisplayFor(model => product.Sales)
                     </td>
                     <td>
                         @Html.DisplayFor(model => product.Categories!.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => product.Platforms!.Name)
                     </td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-success btn-sm">Edit</a>
@@ -48,7 +56,7 @@
         else
         {
             <tr>
-                <td colspan="4">
+                <td colspan="5">
                     <div>
                         Products not available in the database.
                     </div>

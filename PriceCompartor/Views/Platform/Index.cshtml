@@ -1,14 +1,14 @@
-﻿@model IEnumerable<PriceCompartor.Models.Category>
+﻿@model IEnumerable<PriceCompartor.Models.Platform>
 
 @{
-    ViewData["Title"] = "Categories";
+    ViewData["Title"] = "Platforms";
     Layout = "_Layout_Manager";
 }
 
 <h1>@ViewData["Title"]</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary btn-sm">Create New Category</a>
+    <a asp-action="Create" class="btn btn-primary btn-sm">Create New Platform</a>
 </p>
 <table class="table table-hover">
     <thead>
@@ -23,7 +23,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                    <img src="@Url.Action("GetImage",new { id=item.Id})" width="50" height="50" class="object-fit-cover" />
+                <img src="@Url.Action("GetImage",new { id=item.Id})" width="50" height="50" class="object-fit-cover" />
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>

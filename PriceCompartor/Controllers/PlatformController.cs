@@ -12,18 +12,18 @@ using PriceCompartor.Models;
 namespace PriceCompartor.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class CategoryController : Controller
+    public class PlatformController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public CategoryController(ApplicationDbContext context)
+        public PlatformController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         public FileContentResult? GetImage(int id)
         {
-            var photo = _context.Categories.Find(id);
+            var photo = _context.Platforms.Find(id);
             if (photo != null && photo.PhotoFile != null && photo.ImageMimeType != null)
             {
                 return File(photo.PhotoFile, photo.ImageMimeType);
@@ -32,13 +32,13 @@ namespace PriceCompartor.Controllers
             return null;
         }
 
-        // GET: Category
+        // GET: Platform
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            return View(await _context.Platforms.ToListAsync());
         }
 
-        // GET: Category/Details/5
+        // GET: Platform/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,28 +46,28 @@ namespace PriceCompartor.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
+            var platform = await _context.Platforms
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+            if (platform == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            return View(platform);
         }
 
-        // GET: Category/Create
+        // GET: Platform/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Category/Create
+        // POST: Platform/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Category category, IFormFile PhotoFile)
+        public async Task<IActionResult> Create([Bind("Id,Name")] Platform platform, IFormFile PhotoFile)
         {
             if (ModelState.IsValid)
             {
@@ -77,20 +77,15 @@ namespace PriceCompartor.Controllers
                     ModelState.AddModelError("PhotoFile", "只允許上傳 JPG、JPEG 和 PNG 格式的圖片。");
                     return View();
                 }
-                using (var stream = new MemoryStream())
-                {
-                    await PhotoFile.CopyToAsync(stream);
-                    category.PhotoFile = stream.ToArray();
-                    category.ImageMimeType = PhotoFile.ContentType;
-                }
-                _context.Add(category);
+                await platform.SetImageDataAsync(PhotoFile);
+                _context.Add(platform);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            return View(platform);
         }
 
-        // GET: Category/Edit/5
+        // GET: Platform/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -98,22 +93,22 @@ namespace PriceCompartor.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
+            var platform = await _context.Platforms.FindAsync(id);
+            if (platform == null)
             {
                 return NotFound();
             }
-            return View(category);
+            return View(platform);
         }
 
-        // POST: Category/Edit/5
+        // POST: Platform/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Category category, IFormFile PhotoFile)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Platform platform, IFormFile PhotoFile)
         {
-            if (id != category.Id)
+            if (id != platform.Id)
             {
                 return NotFound();
             }
@@ -126,15 +121,15 @@ namespace PriceCompartor.Controllers
                     ModelState.AddModelError("PhotoFile", "只允許上傳 JPG、JPEG 和 PNG 格式的圖片。");
                     return View();
                 }
-                await category.SetImageDataAsync(PhotoFile);
-                _context.Update(category);
+                await platform.SetImageDataAsync(PhotoFile);
+                _context.Update(platform);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            return View(platform);
         }
 
-        // GET: Category/Delete/5
+        // GET: Platform/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -142,34 +137,34 @@ namespace PriceCompartor.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
+            var platform = await _context.Platforms
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+            if (platform == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            return View(platform);
         }
 
-        // POST: Category/Delete/5
+        // POST: Platform/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null)
+            var platform = await _context.Platforms.FindAsync(id);
+            if (platform != null)
             {
-                _context.Categories.Remove(category);
+                _context.Platforms.Remove(platform);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoryExists(int id)
+        private bool PlatformExists(int id)
         {
-            return _context.Categories.Any(e => e.Id == id);
+            return _context.Platforms.Any(e => e.Id == id);
         }
     }
 }

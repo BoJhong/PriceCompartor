@@ -9,11 +9,11 @@ using PriceCompartor.Data;
 
 #nullable disable
 
-namespace PriceCompartor.Data.Migrations
+namespace PriceCompartor.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240405140508_CreateProductsAndCategoriesTables")]
-    partial class CreateProductsAndCategoriesTables
+    [Migration("20240407131116_UpdateProductTables3")]
+    partial class UpdateProductTables3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -244,13 +244,45 @@ namespace PriceCompartor.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ImageMimeType")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<byte[]>("PhotoFile")
+                        .HasColumnType("varbinary(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("PriceCompartor.Models.Platform", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageMimeType")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("PhotoFile")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Platforms");
                 });
 
             modelBuilder.Entity("PriceCompartor.Models.Product", b =>
@@ -261,10 +293,20 @@ namespace PriceCompartor.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Link")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -272,15 +314,23 @@ namespace PriceCompartor.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PlatformId")
+                        .HasColumnType("int");
+
                     b.Property<long>("Price")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("Quantity")
+                    b.Property<long>("Rating")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Sales")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("PlatformId");
 
                     b.ToTable("Products");
                 });
@@ -395,11 +445,17 @@ namespace PriceCompartor.Data.Migrations
                 {
                     b.HasOne("PriceCompartor.Models.Category", "Categories")
                         .WithMany()
-                        .HasForeignKey("CategoryId")
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("PriceCompartor.Models.Platform", "Platforms")
+                        .WithMany()
+                        .HasForeignKey("PlatformId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Categories");
+
+                    b.Navigation("Platforms");
                 });
 #pragma warning restore 612, 618
         }

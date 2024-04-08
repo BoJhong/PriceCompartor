@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PriceCompartor.Models
 {
-    public class Category
+    public class Platform
     {
         public int Id { get; set; }
 
-        [DisplayName("Category")]
+        [DisplayName("Platform")]
         public required string Name { get; set; }
 
         public byte[]? PhotoFile { get; set; }
