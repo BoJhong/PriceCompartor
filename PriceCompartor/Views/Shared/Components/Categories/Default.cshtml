@@ -1,0 +1,17 @@
+﻿@model IEnumerable<Category>
+
+<ul class="list-group">
+    <li class="list-grou-item">
+        <a class="nav-link" asp-controller="Cat" asp-action="Index">All Products</a>
+    </li>
+
+    @foreach (var category in Model)
+    {
+        <li class="list-grou-item">
+            <a class="page-link" asp-controller="Cat" asp-action="Index" asp-route-id="@category.Id">
+                <img src="@Url.Action("GetCategoryImage",new { id=category.Id })" width="24" height="24" class="object-fit-cover" />
+                @category.Name
+            </a>
+        </li>
+    }
+</ul>

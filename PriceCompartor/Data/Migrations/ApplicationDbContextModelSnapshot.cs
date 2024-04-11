@@ -254,7 +254,7 @@ namespace PriceCompartor.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("PriceCompartor.Models.Platform", b =>
@@ -278,7 +278,7 @@ namespace PriceCompartor.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Platforms");
+                    b.ToTable("Platforms", (string)null);
                 });
 
             modelBuilder.Entity("PriceCompartor.Models.Product", b =>
@@ -328,7 +328,7 @@ namespace PriceCompartor.Migrations
 
                     b.HasIndex("PlatformId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("PriceCompartor.Models.SalesLeadEntity", b =>
@@ -361,7 +361,7 @@ namespace PriceCompartor.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SalesLead");
+                    b.ToTable("SalesLead", (string)null);
                 });
 
             modelBuilder.Entity("PriceCompartor.Models.ApplicationUser", b =>

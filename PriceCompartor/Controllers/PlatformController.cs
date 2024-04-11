@@ -71,13 +71,16 @@ namespace PriceCompartor.Controllers
         {
             if (ModelState.IsValid)
             {
-                string[] allowedTypes = { "image/jpg", "image/jpeg", "image/png" };
-                if (!allowedTypes.Contains(PhotoFile.ContentType))
+                if (PhotoFile != null)
                 {
-                    ModelState.AddModelError("PhotoFile", "只允許上傳 JPG、JPEG 和 PNG 格式的圖片。");
-                    return View();
+                    string[] allowedTypes = { "image/jpg", "image/jpeg", "image/png" };
+                    if (!allowedTypes.Contains(PhotoFile.ContentType))
+                    {
+                        ModelState.AddModelError("PhotoFile", "只允許上傳 JPG、JPEG 和 PNG 格式的圖片。");
+                        return View();
+                    }
+                    await platform.SetImageDataAsync(PhotoFile);
                 }
-                await platform.SetImageDataAsync(PhotoFile);
                 _context.Add(platform);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

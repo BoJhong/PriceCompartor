@@ -16,6 +16,17 @@ namespace PriceCompartor.Controllers
             _context = context;
         }
 
+        public FileContentResult? GetCategoryImage(int id)
+        {
+            var photo = _context.Categories.Find(id);
+            if (photo != null && photo.PhotoFile != null && photo.ImageMimeType != null)
+            {
+                return File(photo.PhotoFile, photo.ImageMimeType);
+            }
+
+            return null;
+        }
+
         public FileContentResult? GetPlatformImage(int id)
         {
             var photo = _context.Platforms.Find(id);

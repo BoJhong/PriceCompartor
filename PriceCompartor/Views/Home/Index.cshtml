@@ -1,7 +1,6 @@
 ﻿@model List<Product>
 @{
     ViewData["Title"] = "首頁";
-    List<Category>? cateogories = (List<Category>?)ViewData["Categories"];
 
     Pager pager = new Pager();
 
@@ -20,18 +19,10 @@
         <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
     </div>
 
-    @if (cateogories != null && cateogories.Any())
-    {
-        @foreach (var category in cateogories)
-        {
-            <div>
-                @Html.ActionLink(@category.Name, "Index", "Cat", new { id = category.Id }, new { @class = $"" })
-            </div>
-        }
-    }
+    <vc:categories  />
 
     <div class="row flex-center">
-        @if (cateogories != null && Model.Any())
+        @if (Model != null && Model.Any())
         {
             @foreach (var product in Model!)
             {
