@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PriceCompartor.Data;
 using PriceCompartor.Models;
 
 namespace PriceCompartor.Infrastructure

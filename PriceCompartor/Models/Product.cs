@@ -14,7 +14,7 @@ namespace PriceCompartor.Models
 
         public required string Name { get; set; }
 
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; set; } = string.Empty;
 
         public required int Price { get; set; }
 
@@ -33,5 +33,13 @@ namespace PriceCompartor.Models
         public required int PlatformId { get; set; }
 
         public virtual Platform? Platforms { get; set; }
+
+        public string PlatformImageSrc
+        {
+            get
+            {
+                return Platforms?.ImageSrc ?? string.Empty;
+            }
+        }   
     }
 }

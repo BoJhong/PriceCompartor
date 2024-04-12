@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PriceCompartor.Data;
+using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
 using PriceCompartor.Models.ViewModels;
 

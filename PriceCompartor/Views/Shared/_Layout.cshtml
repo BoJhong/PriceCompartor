@@ -33,7 +33,7 @@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="HomeManager" asp-action="Index">後台</a>
+                                <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index">後台</a>
                             </li>
                         }
                     </ul>
@@ -45,11 +45,15 @@
     <div class="container">
         <main role="main" class="pb-3" style="padding-top: 77px;">
             <div class="row">
-                <div class="col-lg-3">
-                    <vc:small-cart />
+                @if (!string.Equals(ViewContext.RouteData.Values["area"] as string, "Identity", System.StringComparison.OrdinalIgnoreCase)) {
+                    <div class="col-lg-3">
+                        <vc:small-cart />
 
-                    <vc:categories />
-                </div>
+                        <vc:filter />
+
+                        <vc:categories />
+                    </div>
+                }
                 <div class="col">
                     <partial name="_NotificationPartial" />
                     @RenderBody()

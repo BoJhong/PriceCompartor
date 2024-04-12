@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PriceCompartor.Data;
+using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
 
 namespace PriceCompartor.Controllers

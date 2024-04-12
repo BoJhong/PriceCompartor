@@ -2,14 +2,14 @@
 
 <ul class="list-group">
     <li class="list-group-item">
-        <a class="nav-link" asp-controller="Cat" asp-action="Index">All Products</a>
+        <a class="nav-link" asp-controller="Home" asp-action="Index">All Products</a>
     </li>
 
     @foreach (var category in Model)
     {
         <li class="list-group-item">
-            <a class="nav-link" asp-controller="Cat" asp-action="Index" asp-route-id="@category.Id">
-                <img src="@Url.Action("GetCategoryImage",new { id=category.Id })" width="24" height="24" class="object-fit-cover" />
+            <a class="nav-link" asp-controller="Home" asp-action="Index" asp-route-categoryId="@category.Id">
+                <img src="@category.ImageSrc" width="24" height="24" class="object-fit-cover rounded" />
                 @category.Name
             </a>
         </li>

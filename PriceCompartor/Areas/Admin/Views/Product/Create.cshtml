@@ -1,0 +1,60 @@
+﻿@model PriceCompartor.Models.Product
+
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<form asp-action="Create">
+    <div class="container">
+        <div class="form-group">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <label asp-for="Description" class="control-label"></label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <label asp-for="ImageUrl" class="control-label"></label>
+            <input asp-for="ImageUrl" class="form-control" />
+            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <label asp-for="Price" class="control-label"></label>
+            <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <label asp-for="Link" class="control-label"></label>
+            <input asp-for="Link" class="form-control" />
+            <span asp-validation-for="Link" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <label asp-for="Sales" class="control-label"></label>
+            <input asp-for="Sales" class="form-control" />
+            <span asp-validation-for="Sales" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <label class="control-label">Category</label>
+            <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories">
+                <option disabled>--Select Category--</option>
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <label class="control-label">Platform</label>
+            <select asp-for="PlatformId" class="form-control" asp-items="ViewBag.Platforms">
+                <option disabled>--Select Platform--</option>
+            </select>
+            <span asp-validation-for="PlatformId" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <input type="submit" value="Create" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-success">Back to List</a>
+        </div>
+    </div>
+</form>

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Playwright;
 using Newtonsoft.Json.Linq;
-using PriceCompartor.Data;
+using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
 using System.Diagnostics;
 using System.Text.Json.Nodes;

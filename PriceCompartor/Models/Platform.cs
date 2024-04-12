@@ -1,5 +1,7 @@
-﻿using System.ComponentModel;
+﻿using PriceCompartor.Infrastructure.Validation;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PriceCompartor.Models
 {
@@ -24,5 +26,25 @@ namespace PriceCompartor.Models
                 ImageMimeType = file.ContentType;
             }
         }
+
+        public string ImageSrc
+        {
+            get
+            {
+                string mimeType = ImageMimeType ?? "image/png";
+                string base64 = Convert.ToBase64String(PhotoFile ?? new byte[0]);
+                return $"data:{mimeType};base64,{base64}";
+            }
+        }
+
+        [NotMapped]
+        [FileExtension(["jpg", "jpeg", "png"])]
+        [FileSize(1024 * 1024)]
+        public IFormFile? ImageUpload { get; set; }
+
+
+        [NotMapped]
+        // 是否在過濾器中啟用
+        public bool filterEnabled { get; set; } = true;
     }
 }

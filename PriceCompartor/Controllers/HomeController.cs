@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using PriceCompartor.Data;
+using Microsoft.EntityFrameworkCore;
+using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
+using PriceCompartor.Models.ViewModels;
 using System.Diagnostics;
 
 namespace PriceCompartor.Controllers
@@ -16,34 +18,18 @@ namespace PriceCompartor.Controllers
             _context = context;
         }
 
-        public FileContentResult? GetCategoryImage(int id)
-        {
-            var photo = _context.Categories.Find(id);
-            if (photo != null && photo.PhotoFile != null && photo.ImageMimeType != null)
-            {
-                return File(photo.PhotoFile, photo.ImageMimeType);
-            }
-
-            return null;
-        }
-
-        public FileContentResult? GetPlatformImage(int id)
-        {
-            var photo = _context.Platforms.Find(id);
-            if (photo != null && photo.PhotoFile != null && photo.ImageMimeType != null)
-            {
-                return File(photo.PhotoFile, photo.ImageMimeType);
-            }
-
-            return null;
-        }
-
-        public IActionResult Index(int page = 1)
+        public IActionResult Index(int? categoryId, int page = 1)
         {
             ViewData["Categories"] = _context.Categories.ToList();
-            List<Product> products = _context.Products.ToList();
+            List<Product> products = (
+                categoryId != null
+                ? _context.Products.Where(p => p.CategoryId == categoryId)
+                : _context.Products
+            )
+            .Include(p => p.Categories)
+            .Include(p => p.Platforms).ToList();
 
-            const int pageSize = 30;
+            const int pageSize = 40;
             if (page < 1) page = 1;
 
             var pager = new Pager(products.Count(), page, pageSize);

@@ -14,34 +14,36 @@
 }
 
 <div class="container">
-    <div class="text-center">
-        <h1 class="display-4">Welcome</h1>
-        <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <div class="text-center mb-4">
+        <h1 class="display-4">@ViewData["Title"]</h1>
+        @*<p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>*@
     </div>
 
-    <div class="row flex-center">
+    <div class="card-columns row row-cols-1 row-cols-md-3 row-cols-xxl-4 g-4">
         @if (Model != null && Model.Any())
         {
             @foreach (var product in Model!)
             {
-                string imageUrl = !string.IsNullOrEmpty(product.ImageUrl) ? product.ImageUrl : "https://media.istockphoto.com/id/1409329028/zh/%E5%90%91%E9%87%8F/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=UNoD6tnZhsUwykY-JjiLeIePaay0YbVM6P9XxrE-fZo=";
-                <div class="card col-md-5 col-lg-4 col-xl-3 p-0">
-                    <a href=@product.Link>
-                        <img src=@imageUrl class="card-img-top object-fit-cover" style="aspect-ratio: 1/1;">
-                        <div class="card-body px-2">
-                            <div class="card-title title-truncation" style="font-size: 0.9rem; height: 2.5rem;">
-                                @product.Name
-                            </div>
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="@product.ImageUrl" class="card-img-top object-fit-cover" style="aspect-ratio: 1/1;">
+                        <div class="card-body">
+                            <a href="@product.Link" target="_blank">
+                                <div class="card-title title-truncation" style="font-size: 0.9rem; height: 2.5rem;">
+                                    @product.Name
+                                </div>
+                            </a>
                             @if (!string.IsNullOrEmpty(product.Description))
                             {
                                 <p class="card-text">@product.Description</p>
                             }
-                            <img src="@Url.Action("GetPlatformImage",new { id=product.PlatformId})" width="24" height="24" class="object-fit-cover rounded" />
                             <div class="text-danger fw-bold">@product.Price.ToString("C0")</div>
-                            <div class="text-primary" style="font-size: 0.8rem;">總銷量>@product.Sales</div>
-                            <a class="btn btn-primary btn-sm" asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id">Add to Cart</a>"
+                            <div class="text-primary mb-2" style="font-size: 0.8rem;">總銷量>@product.Sales</div>
+                            <img src="@product.PlatformImageSrc" width="31" class="object-fit-cover rounded" />
+                            <a class="btn btn-primary btn-sm" href="@product.Link" target="_blank">瀏覽</a>
+                            <a class="btn btn-success btn-sm" asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id">加入購物車</a>
                         </div>
-                    </a>
+                    </div>
                 </div>
             }
         }
