@@ -1,0 +1,66 @@
+﻿@model CartViewModel
+@{
+    ViewData["Title"] = "購物車";
+
+    Pager pager = new Pager();
+
+    int pageNo = 0;
+
+    if (ViewBag.Pager != null)
+    {
+        pager = ViewBag.pager;
+        pageNo = pager.CurrentPage;
+    }
+}
+
+<div class="container-fluid">
+    <h1 class="display-4">@ViewData["Title"]</h1>
+
+    @if (Model.CartItems.Count > 0)
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr class="d-flex">
+                    <th class="col-1">Image</th>
+                    <th class="col">Product</th>
+                    <th class="col-1">Quantity</th>
+                    <th class="col-2"></th>
+                    <th class="col-1">Price</th>
+                    <th class="col-1">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.CartItems)
+            {
+                    <tr class="d-flex">
+                        <td class="col-1">
+                            <img src="@item.ImageUrl" width="100" height="100" class="rounded" />
+                        </td>
+                        <td class="col text-truncate">@item.ProductName</td>
+                        <td class="col-1">@item.Quantity</td>
+                        <td class="col-2">
+                            <a class="btn btn-primary btn-sm" asp-action="Add" asp-route-id="@item.ProductId">+</a>
+                            <a class="btn btn-info btn-sm" asp-action="Decrease" asp-route-id="@item.ProductId">-</a>
+                            <a class="btn btn-danger btn-sm" asp-action="Remove" asp-route-id="@item.ProductId">Remove</a>
+                        </td>
+                        <td class="col-1">@item.Price.ToString("C0")</td>
+                        <td class="col-1">@Model.CartItems.Where(x => x.ProductId == item.ProductId).Sum(x => x.Quantity * x.Price).ToString("C0")</td>
+                    </tr>
+            }
+            </tbody>
+            <tr>
+                <td class="text-right" colspan="4">Grand Total: @Model.GrandTotal.ToString("C0")</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="4">
+                    <a class="btn btn-danger" asp-action="Clear">Clear Cart</a>
+                    <a class="btn btn-danger" href="#">Checkout</a>
+                </td>
+            </tr>
+        </table>
+    }
+    else
+    {
+        <p class="display-6 text-center">Your cart is empty.</p>
+    }
+</div>

@@ -44,7 +44,17 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3" style="padding-top: 77px;">
-            @RenderBody()
+            <div class="row">
+                <div class="col-lg-3">
+                    <vc:small-cart />
+
+                    <vc:categories />
+                </div>
+                <div class="col">
+                    <partial name="_NotificationPartial" />
+                    @RenderBody()
+                </div>
+            </div>
         </main>
     </div>
 

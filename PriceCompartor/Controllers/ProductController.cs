@@ -64,7 +64,7 @@ namespace PriceCompartor.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(long? id)
         {
             if (id == null)
             {
@@ -96,7 +96,7 @@ namespace PriceCompartor.Controllers
         }
 
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public IActionResult Delete(long? id)
         {
             if (id == null)
             {

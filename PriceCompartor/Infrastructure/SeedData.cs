@@ -7,38 +7,22 @@ namespace PriceCompartor.Infrastructure
 {
     public class SeedData
     {
-        public static void SeedDatabase(ApplicationDbContext context)
+        public static void SeedDatabase(ApplicationDbContext context, RoleManager<IdentityRole> roleManager)
         {
             context.Database.Migrate();
 
             if (!context.Roles.Any())
             {
-                context.Roles.AddRange(
-                    new IdentityRole { Name = "Admin" },
-                    new IdentityRole { Name = "User" }
-                );
-                context.SaveChanges();
-            }
-
-            if (!context.Users.Any())
-            {
-                var hasher = new PasswordHasher<IdentityUser>();
-
-                context.Users.AddRange(
-                    new IdentityUser
-                    {
-                        UserName = "admin",
-                        NormalizedUserName = "ADMIN",
-                        Email = "",
-                        PasswordHash = hasher.HashPassword(null, "admin")
-                    }
-                );
+                roleManager.CreateAsync(new IdentityRole("Admin")).GetAwaiter().GetResult();
+                roleManager.CreateAsync(new IdentityRole("Sales")).GetAwaiter().GetResult();
+                roleManager.CreateAsync(new IdentityRole("User")).GetAwaiter().GetResult();
                 context.SaveChanges();
             }
 
             if (!context.Platforms.Any())
             {
                 context.Platforms.AddRange(
+                    new Platform { Name = "Shopee" },
                     new Platform { Name = "Momo" },
                     new Platform { Name = "PChome" }
                 );

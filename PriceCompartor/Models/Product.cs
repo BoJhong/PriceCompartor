@@ -6,7 +6,7 @@ namespace PriceCompartor.Models
     public class Product
     {
         [Key]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public required string Link { get; set; }
 
@@ -16,11 +16,11 @@ namespace PriceCompartor.Models
 
         public string Description { get; set; } = string.Empty;
 
-        public required uint Price { get; set; }
+        public required int Price { get; set; }
 
-        public uint Sales { get; set; } = 0;
+        public int Sales { get; set; } = 0;
 
-        public uint Rating { get; set; } = 0;
+        public int Rating { get; set; } = 0;
 
         public string? Address { get; set; }
 

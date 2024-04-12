@@ -12,8 +12,8 @@ using PriceCompartor.Data;
 namespace PriceCompartor.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240407061639_Initial")]
-    partial class Initial
+    [Migration("20240411161717_InitDatabase")]
+    partial class InitDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -244,9 +244,16 @@ namespace PriceCompartor.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ImageMimeType")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("PhotoFile")
+                        .HasColumnType("varbinary(max)");
 
                     b.HasKey("Id");
 
@@ -261,9 +268,16 @@ namespace PriceCompartor.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ImageMimeType")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("PhotoFile")
+                        .HasColumnType("varbinary(max)");
 
                     b.HasKey("Id");
 
@@ -272,17 +286,23 @@ namespace PriceCompartor.Migrations
 
             modelBuilder.Entity("PriceCompartor.Models.Product", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Link")
@@ -296,11 +316,14 @@ namespace PriceCompartor.Migrations
                     b.Property<int>("PlatformId")
                         .HasColumnType("int");
 
-                    b.Property<long>("Price")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
 
-                    b.Property<long>("Quantity")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Sales")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -421,9 +444,7 @@ namespace PriceCompartor.Migrations
                 {
                     b.HasOne("PriceCompartor.Models.Category", "Categories")
                         .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CategoryId");
 
                     b.HasOne("PriceCompartor.Models.Platform", "Platforms")
                         .WithMany()

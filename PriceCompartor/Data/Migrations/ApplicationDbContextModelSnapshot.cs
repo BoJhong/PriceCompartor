@@ -254,7 +254,7 @@ namespace PriceCompartor.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("PriceCompartor.Models.Platform", b =>
@@ -278,16 +278,16 @@ namespace PriceCompartor.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Platforms", (string)null);
+                    b.ToTable("Platforms");
                 });
 
             modelBuilder.Entity("PriceCompartor.Models.Product", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
@@ -313,14 +313,14 @@ namespace PriceCompartor.Migrations
                     b.Property<int>("PlatformId")
                         .HasColumnType("int");
 
-                    b.Property<long>("Price")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
 
-                    b.Property<long>("Rating")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
 
-                    b.Property<long>("Sales")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Sales")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -328,7 +328,7 @@ namespace PriceCompartor.Migrations
 
                     b.HasIndex("PlatformId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("PriceCompartor.Models.SalesLeadEntity", b =>
@@ -361,7 +361,7 @@ namespace PriceCompartor.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SalesLead", (string)null);
+                    b.ToTable("SalesLead");
                 });
 
             modelBuilder.Entity("PriceCompartor.Models.ApplicationUser", b =>

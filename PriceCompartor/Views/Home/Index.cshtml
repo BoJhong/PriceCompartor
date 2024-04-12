@@ -19,15 +19,13 @@
         <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
     </div>
 
-    <vc:categories  />
-
     <div class="row flex-center">
         @if (Model != null && Model.Any())
         {
             @foreach (var product in Model!)
             {
                 string imageUrl = !string.IsNullOrEmpty(product.ImageUrl) ? product.ImageUrl : "https://media.istockphoto.com/id/1409329028/zh/%E5%90%91%E9%87%8F/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=UNoD6tnZhsUwykY-JjiLeIePaay0YbVM6P9XxrE-fZo=";
-                <div class="card col-md-5 col-lg-3 col-xl-2 p-0">
+                <div class="card col-md-5 col-lg-4 col-xl-3 p-0">
                     <a href=@product.Link>
                         <img src=@imageUrl class="card-img-top object-fit-cover" style="aspect-ratio: 1/1;">
                         <div class="card-body px-2">
@@ -38,9 +36,10 @@
                             {
                                 <p class="card-text">@product.Description</p>
                             }
-                            <img src="@Url.Action("GetPlatformImage",new { id=product.PlatformId})" width="24" height="24" class="object-fit-cover" />
+                            <img src="@Url.Action("GetPlatformImage",new { id=product.PlatformId})" width="24" height="24" class="object-fit-cover rounded" />
                             <div class="text-danger fw-bold">@product.Price.ToString("C0")</div>
                             <div class="text-primary" style="font-size: 0.8rem;">總銷量>@product.Sales</div>
+                            <a class="btn btn-primary btn-sm" asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id">Add to Cart</a>"
                         </div>
                     </a>
                 </div>
@@ -52,10 +51,10 @@
         <nav aria-label="Page navigation" class="mt-4">
             <ul class="pagination justify-content-center">
             <li class="page-item">
-                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-page="1">«</a>
+                    <a class="page-link @(pager.CurrentPage == 1 ? "disabled" : "")" asp-controller="Home" asp-action="Index" asp-route-page="1">«</a>
             </li>
             <li class="page-item">
-                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-page="@(pager.CurrentPage - 1)">‹</a>
+                    <a class="page-link @(pager.CurrentPage == 1 ? "disabled" : "")" asp-controller="Home" asp-action="Index" asp-route-page="@(pager.CurrentPage - 1)">‹</a>
             </li>
             @for (var pge = pager.StartPage; pge <= pager.EndPage; pge++)
             {
@@ -64,10 +63,10 @@
                 </li>
             }
             <li class="page-item">
-                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-page="@(pager.CurrentPage + 1)">›</a>
+                    <a class="page-link @(pager.CurrentPage == pager.TotalPages ? "disabled" : "")" asp-controller="Home" asp-action="Index" asp-route-page="@(pager.CurrentPage + 1)">›</a>
             </li>
             <li class="page-item">
-                    <a class="page-link" asp-controller="Home" asp-action="Index" asp-route-page="@(pager.TotalPages)">»</a>
+                    <a class="page-link @(pager.CurrentPage == pager.TotalPages ? "disabled" : "")" asp-controller="Home" asp-action="Index" asp-route-page="@(pager.TotalPages)">»</a>
             </li>
         </ul>
     </nav>

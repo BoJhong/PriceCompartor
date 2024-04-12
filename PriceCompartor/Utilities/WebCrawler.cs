@@ -81,7 +81,7 @@ namespace PriceCompartor.Utilities
                     var p = await element.QuerySelectorAsync("./div/div/a/div/div[2]/div[2]/div/div/div/div/span[2]");
                     if (p == null) continue;
                     string priceStr = await p.InnerTextAsync();
-                    uint price = uint.Parse(Regex.Replace(priceStr, ",", ""));
+                    int price = int.Parse(Regex.Replace(priceStr, ",", ""));
 
                     var hrefElement = await element.QuerySelectorAsync("./div/div/a");
                     if (hrefElement == null) continue;
@@ -144,16 +144,16 @@ namespace PriceCompartor.Utilities
                     {
                         string priceStr = item["goodsPrice"]!.ToString();
                         priceStr = Regex.Replace(priceStr.Substring(1), ",", "").Split(' ')[0];
-                        uint price = uint.Parse(priceStr);
+                        int price = int.Parse(priceStr);
 
                         string name = (string)item["goodsName"]!;
                         string imageUrl = (string)item["imgUrlArray"]?[0]!;
 
                         string salesInfo = item["totalSalesInfo"]!["text"]!.ToString();
-                        uint sales = 0;
+                        int sales = 0;
                         if (!string.IsNullOrEmpty(salesInfo))
                         {
-                            sales = uint.Parse(Regex.Replace(salesInfo.Split(">")[1], ",", ""));
+                            sales = int.Parse(Regex.Replace(salesInfo.Split(">")[1], ",", ""));
                         }
 
                         products.Add(new Product
@@ -200,7 +200,7 @@ namespace PriceCompartor.Utilities
                             Name = item["name"]!.ToString(),
                             Link = $"https://24h.pchome.com.tw/prod/{item["Id"]}",
                             ImageUrl = $"https://cs-a.ecimg.tw/{item["picS"]}",
-                            Price = uint.Parse(item["price"]!.ToString()),
+                            Price = int.Parse(item["price"]!.ToString()),
                             PlatformId = pchomePlatform.Id
                         });
                     }

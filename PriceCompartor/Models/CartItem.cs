@@ -6,11 +6,11 @@
 
         public string ProductName { get; set; }
 
-        public uint Quantity { get; set; }
+        public int Quantity { get; set; }
 
-        public uint Price { get; set; }
+        public int Price { get; set; }
 
-        public uint Total
+        public int Total
         {
             get { return Quantity * Price; }
         }
