@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
 
@@ -12,10 +13,12 @@ namespace PriceCompartor.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMemoryCache _cache;
 
-        public ProductController(ApplicationDbContext context)
+        public ProductController(ApplicationDbContext context, IMemoryCache memoryCache)
         {
             _context = context;
+            _cache = memoryCache;
         }
 
         public IActionResult Index()
@@ -61,6 +64,7 @@ namespace PriceCompartor.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             LoadCategoriesAndPlatforms();
+            _cache.Remove("ProductCounts");
             return View();
         }
 
@@ -93,6 +97,7 @@ namespace PriceCompartor.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             LoadCategoriesAndPlatforms();
+            _cache.Remove("ProductCounts");
             return View();
         }
 
@@ -120,6 +125,7 @@ namespace PriceCompartor.Areas.Admin.Controllers
             ModelState.Remove("Categories");
             _context.Products.Remove(model);
             _context.SaveChanges();
+            _cache.Remove("ProductCounts");
             return RedirectToAction(nameof(Index));
         }
 
@@ -136,6 +142,7 @@ namespace PriceCompartor.Areas.Admin.Controllers
             var allProducts = await _context.Products.ToListAsync();
             _context.Products.RemoveRange(allProducts);
             await _context.SaveChangesAsync();
+            _cache.Remove("ProductCounts");
             return RedirectToAction(nameof(Index));
         }
     }

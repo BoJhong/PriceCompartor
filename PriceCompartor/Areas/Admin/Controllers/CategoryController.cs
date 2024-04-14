@@ -16,12 +16,10 @@ namespace PriceCompartor.Areas.Admin.Controllers
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IWebHostEnvironment _environment;
 
-        public CategoryController(ApplicationDbContext context, IWebHostEnvironment environment)
+        public CategoryController(ApplicationDbContext context)
         {
             _context = context;
-            _environment = environment;
         }
 
         public FileContentResult? GetImage(int id)

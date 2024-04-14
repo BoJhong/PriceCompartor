@@ -33,7 +33,7 @@ namespace PriceCompartor.Controllers
             .Include(p => p.Categories)
             .Include(p => p.Platforms).ToList();
 
-            const int pageSize = 40;
+            const int pageSize = 60;
             if (page < 1) page = 1;
 
             var pager = new Pager(products.Count(), page, pageSize);

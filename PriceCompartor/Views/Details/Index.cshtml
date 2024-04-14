@@ -6,10 +6,10 @@
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Category" asp-action="Index">分類</a></li>
         @if (category != null)
         {
-            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" asp-route-categoryId="@category.Id">@category.Name</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Category" asp-action="Index" asp-route-id="@category.Id">@category.Name</a></li>
         }
         <li class="breadcrumb-item active" aria-current="page">@Model.Product.Name</li>
     </ol>
@@ -28,9 +28,7 @@
         <p>分類: @Model.Product.Categories?.Name</p>
         <p>平台: @Model.Product.Platforms?.Name</p>
     </div>
-
 </div>
-
 
 @if (Model.PriceHistory != null)
 {
@@ -39,7 +37,7 @@
     </div>
 }
 
-<script src="~/js/chart.umd.min.js"></script>
+<script src="~/lib/Chart.js/dist/chart.umd.min.js"></script>
 
 @if (Model.PriceHistory != null)
 {

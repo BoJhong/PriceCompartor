@@ -7,13 +7,30 @@
       "destination": "wwwroot/lib/font-awesome/"
     },
     {
-      "library": "Chart.js@4.4.1",
-      "destination": "wwwroot/lib/Chart.js/"
-    },
-    {
       "provider": "jsdelivr",
       "library": "chart.js@4.4.2",
       "destination": "wwwroot/lib/chart.js/"
+    },
+    {
+      "library": "ckeditor5@41.3.0",
+      "destination": "wwwroot/lib/ckeditor5/"
+    },
+    {
+      "library": "bootswatch@5.3.3",
+      "destination": "wwwroot/lib/bootswatch/",
+      "files": [
+        "cerulean/bootstrap.min.css",
+        "minty/bootstrap.css",
+        "minty/bootstrap.min.css",
+        "minty/bootstrap.min.css.map",
+        "minty/bootstrap.rtl.css",
+        "minty/bootstrap.rtl.min.css",
+        "minty/bootstrap.rtl.min.css.map"
+      ]
+    },
+    {
+      "library": "Chart.js@4.4.1",
+      "destination": "wwwroot/Chart.js/"
     }
   ]
 }

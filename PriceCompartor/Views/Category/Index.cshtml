@@ -40,39 +40,8 @@
     </button>
 </div>
 
-<div class="card-columns row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-4">
-    @if (Model != null && Model.Any())
-    {
-        @foreach (var product in Model!)
-        {
-            <div class="col">
-                <div class="card h-100">
-                    <img src="@product.ImageUrl" class="card-img-top object-fit-cover" style="height:190px;">
-                    <div class="card-body">
-                        <a href="@product.Link" target="_blank">
-                            <div class="card-title title-truncation" style="font-size: 0.9rem; height: 2.5rem;">
-                                @product.Name
-                            </div>
-                        </a>
-                        @if (!string.IsNullOrEmpty(product.Description))
-                        {
-                            <p class="card-text">@product.Description</p>
-                        }
-                        <div class="text-danger fw-bold">@product.Price.ToString("C0")</div>
-                        <div class="text-primary mb-2" style="font-size: 0.8rem;">總銷量>@product.Sales</div>
-                        <div class="text-center">
-                            <div class="btn-group">
-                                <a class="btn btn-primary btn-sm" href="@product.Link" target="_blank" style="width: 31px; background:url(@product.PlatformImageSrc) no-repeat center center; background-size: cover"></a>
-                                <a class="btn btn-primary btn-sm" asp-controller="Details" asp-action="Index" asp-route-id="@product.Id"><i class="fa-regular fa-eye"></i></a>
-                                <a class="btn btn-success btn-sm" asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id"><i class="fa-solid fa-cart-shopping"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-    }
-</div>
+<partial name="_ProductCardPartial" model=Model />
+
 @if (pager.TotalPages > 0)
 {
     <nav aria-label="Page navigation" class="mt-4">
