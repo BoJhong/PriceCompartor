@@ -4,8 +4,10 @@
     {
         <p>Items in cart: @Model.NumberOfItems</p>
         <p>Total: <b>@Model.TotalAmount.ToString("C0")</b></p>
-        <a class="btn btn-warning" asp-controller="Cart" asp-action="Index">View Cart</a>
-        <a class="btn btn-danger" asp-controller="Cart" asp-action="Clear">Clear Cart</a>
+        <div class="btn-group w-100">
+            <a class="btn btn-warning" asp-controller="Cart" asp-action="Index">View Cart</a>
+            <a class="btn btn-danger" asp-controller="Cart" asp-action="Clear">Clear Cart</a>
+        </div>
     }
     else
     {

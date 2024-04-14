@@ -309,6 +309,10 @@ namespace PriceCompartor.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("OId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("PlatformId")
                         .HasColumnType("int");
 

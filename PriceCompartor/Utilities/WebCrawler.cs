@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Playwright;
 using Newtonsoft.Json.Linq;
+using NuGet.Packaging.Signing;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
 using System.Diagnostics;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -106,7 +108,8 @@ namespace PriceCompartor.Utilities
                         Link = href,
                         ImageUrl = imageUrl,
                         Price = price,
-                        PlatformId = shopeePlatform.Id
+                        PlatformId = shopeePlatform.Id,
+                        OId = "shopee-"
                     });
                 }
 
@@ -127,47 +130,52 @@ namespace PriceCompartor.Utilities
                 var momoPlatform = _context.Platforms.FirstOrDefault(p => p.Name == "Momo");
                 if (momoPlatform == null) return null;
 
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://m.momoshop.com.tw/search.momo?searchKeyword={keyword}&curPage={pg}");
-                HttpResponseMessage response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-
-                string responseBody = await response.Content.ReadAsStringAsync();
-                Match match = Regex.Match(responseBody, @"goodsInfoList\s*=\s*(\[.*?\]);", RegexOptions.Singleline);
-
-                var products = new List<Product>();
-                if (match.Success)
+                using (HttpClient client = new HttpClient())
                 {
-                    JArray jsonArray = JArray.Parse(match.Groups[1].Value);
-                    foreach (JObject item in jsonArray)
+                    client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://m.momoshop.com.tw/search.momo?searchKeyword={keyword}&curPage={pg}");
+                    HttpResponseMessage response = await client.SendAsync(request);
+                    response.EnsureSuccessStatusCode();
+
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    Match match = Regex.Match(responseBody, @"goodsInfoList\s*=\s*(\[.*?\]);", RegexOptions.Singleline);
+
+                    var products = new List<Product>();
+                    if (match.Success)
                     {
-                        string priceStr = item["goodsPrice"]!.ToString();
-                        priceStr = Regex.Replace(priceStr.Substring(1), ",", "").Split(' ')[0];
-                        int price = int.Parse(priceStr);
-
-                        string name = (string)item["goodsName"]!;
-                        string imageUrl = (string)item["imgUrlArray"]?[0]!;
-
-                        string salesInfo = item["totalSalesInfo"]!["text"]!.ToString();
-                        int sales = 0;
-                        if (!string.IsNullOrEmpty(salesInfo))
+                        JArray jsonArray = JArray.Parse(match.Groups[1].Value);
+                        foreach (JObject item in jsonArray)
                         {
-                            sales = int.Parse(Regex.Replace(salesInfo.Split(">")[1], ",", ""));
+                            string? priceStr = item["goodsPrice"]?.ToString();
+                            string? name = item["goodsName"]?.ToString();
+                            string? imageUrl = item["imgUrlArray"]?[0]?.ToString();
+                            string? goodsCode = item["goodsCode"]?.ToString();
+
+                            if (priceStr == null || name == null || imageUrl == null || goodsCode == null) continue;
+
+                            int price = int.Parse(Regex.Replace(priceStr.Substring(1), ",", "").Split(' ')[0]);
+
+                            string? salesInfo = item["totalSalesInfo"]?["text"]?.ToString();
+                            int sales = 0;
+                            if (!string.IsNullOrEmpty(salesInfo))
+                            {
+                                sales = int.Parse(Regex.Replace(salesInfo.Split(">")[1], ",", ""));
+                            }
+
+                            products.Add(new Product
+                            {
+                                Name = name,
+                                Link = $"https://www.momoshop.com.tw/goods/GoodsDetail.jsp?i_code={item["goodsCode"]}",
+                                ImageUrl = imageUrl,
+                                Price = price,
+                                PlatformId = momoPlatform.Id,
+                                Sales = sales,
+                                OId = $"tw_pec_momoshop-{goodsCode}"
+                            });
                         }
-
-                        products.Add(new Product
-                        {
-                            Name = name,
-                            Link = $"https://www.momoshop.com.tw/goods/GoodsDetail.jsp?i_code={item["goodsCode"]}",
-                            ImageUrl = imageUrl,
-                            Price = price,
-                            PlatformId = momoPlatform.Id,
-                            Sales = sales,
-                        });
                     }
+                    return products;
                 }
-                return products;
             }
             catch (Exception)
             {
@@ -182,18 +190,19 @@ namespace PriceCompartor.Utilities
                 var pchomePlatform = _context.Platforms.FirstOrDefault(p => p.Name == "PChome");
                 if (pchomePlatform == null) return null;
 
-                HttpClient client = new HttpClient();
-                string url = $"https://ecshweb.pchome.com.tw/search/v3.3/all/results?q={keyword}&page={pg}&sort=sale/dc";
-                HttpResponseMessage response = await client.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-                string responseBody = await response.Content.ReadAsStringAsync();
-                JObject json = JObject.Parse(responseBody);
-
-                var products = new List<Product>();
-
-                foreach (JObject item in json["prods"]!)
+                using (HttpClient client = new HttpClient())
                 {
-                    try
+                    string url = $"https://ecshweb.pchome.com.tw/search/v3.3/all/results?q={keyword}&page={pg}&sort=sale/dc";
+                    HttpResponseMessage response = await client.GetAsync(url);
+                    response.EnsureSuccessStatusCode();
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    JObject json = JObject.Parse(responseBody);
+
+                    var products = new List<Product>();
+
+                    if (int.Parse(json["totalRows"]!.ToString()) == 0) return null;
+
+                    foreach (JObject item in json["prods"]!)
                     {
                         products.Add(new Product
                         {
@@ -201,20 +210,54 @@ namespace PriceCompartor.Utilities
                             Link = $"https://24h.pchome.com.tw/prod/{item["Id"]}",
                             ImageUrl = $"https://cs-a.ecimg.tw/{item["picS"]}",
                             Price = int.Parse(item["price"]!.ToString()),
-                            PlatformId = pchomePlatform.Id
+                            PlatformId = pchomePlatform.Id,
+                            OId = $"tw_ec_pchome24h-{item["Id"]}"
                         });
                     }
-                    catch (Exception)
-                    {
-                        continue;
-                    }
+                    return products;
                 }
-
-                return products;
             }
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+        public async Task<List<PriceHistroy>> GetPriceHistory(string id)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var data = new
+                {
+                    days = 90,
+                    item = new string[] { id }
+                };
+
+                var json = JsonSerializer.Serialize(data);
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync("https://extension.biggo.com/api/product_price_history.php", content);
+
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                var doc = JsonDocument.Parse(responseBody);
+                var root = doc.RootElement;
+                var priceHistory = root.GetProperty(id).GetProperty("price_history");
+
+                List<PriceHistroy> priceHistoryResult = new List<PriceHistroy>();
+
+                foreach (var history in priceHistory.EnumerateArray())
+                {
+                    int price = history.GetProperty("y").GetInt32();
+                    priceHistoryResult.Add(new PriceHistroy
+                        {
+                            Price = price,
+                            Timestamp = history.GetProperty("x").GetInt64()
+                        }
+                    );
+                }
+
+                return priceHistoryResult;
             }
         }
     }

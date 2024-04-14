@@ -14,7 +14,7 @@ namespace PriceCompartor.Models
 
         public required string Name { get; set; }
 
-        public string? Description { get; set; } = string.Empty;
+        public string? Description { get; set; }
 
         public required int Price { get; set; }
 
@@ -23,6 +23,8 @@ namespace PriceCompartor.Models
         public int Rating { get; set; } = 0;
 
         public string? Address { get; set; }
+
+        public string? OId { get; set; }
 
         [ForeignKey("Categories")]
         public int? CategoryId { get; set; }
@@ -40,6 +42,6 @@ namespace PriceCompartor.Models
             {
                 return Platforms?.ImageSrc ?? string.Empty;
             }
-        }   
+        }
     }
 }

@@ -1,16 +1,36 @@
-﻿@model IEnumerable<Category>
-
+﻿@model CategoriesViewModel
 <ul class="list-group">
-    <li class="list-group-item">
-        <a class="nav-link" asp-controller="Home" asp-action="Index">All Products</a>
+    @{
+        bool isCategory = ViewContext.RouteData.Values["Controller"]?.ToString() == "Category";
+        /*
+        Microsoft.Extensions.Primitives.StringValues categoryIdVal;
+        Context.Request.Query.TryGetValue("categoryId", out categoryIdVal);
+
+        var categoryId = categoryIdVal != Microsoft.Extensions.Primitives.StringValues.Empty
+        ? int.Parse(categoryIdVal.ToString()!)
+        : -1;
+        */
+    }
+    <li class="list-group-item @(isCategory && ViewData["SelectedCategory"]?.ToString() == null ? " active" : "")">
+        <a class="nav-link" asp-controller="Category" asp-action="Index" asp-route-id="">
+            All Products
+            <span class="badge badge-primary badge-pill">@Model.ProductCounts?[-1]</span>
+        </a>
+    </li>
+    <li class="list-group-item @(isCategory && ViewData["SelectedCategory"]?.ToString() == "0" ? " active" : "")">
+        <a class="nav-link" asp-controller="Category" asp-action="Index" asp-route-id="0">
+            Uncategorized
+            <span class="badge badge-primary badge-pill">@Model.ProductCounts?[0]</span>
+        </a>
     </li>
 
-    @foreach (var category in Model)
+    @foreach (var category in Model.Categories)
     {
-        <li class="list-group-item">
-            <a class="nav-link" asp-controller="Home" asp-action="Index" asp-route-categoryId="@category.Id">
+        <li class="list-group-item @(isCategory && ViewData["SelectedCategory"]?.ToString() == category.Id.ToString() ? " active" : "")">
+            <a class="nav-link" asp-controller="Category" asp-action="Index" asp-route-id="@category.Id">
                 <img src="@category.ImageSrc" width="24" height="24" class="object-fit-cover rounded" />
                 @category.Name
+                <span class="badge badge-primary badge-pill">@(Model.ProductCounts?.ContainsKey(category.Id) == true ? Model.ProductCounts?[category.Id] : 0)</span>
             </a>
         </li>
     }

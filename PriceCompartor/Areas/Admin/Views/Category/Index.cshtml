@@ -22,7 +22,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                    <img src="@Url.Action("GetImage",new { id=item.Id})" width="50" height="50" class="object-fit-cover" />
+                    <img src="@Url.Action("GetImage",new { id=item.Id})" width="50" height="50" class="object-fit-cover rounded" />
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>

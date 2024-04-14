@@ -41,5 +41,7 @@ namespace PriceCompartor.Models
         [FileExtension(["jpg", "jpeg", "png"])]
         [FileSize(1024 * 1024)]
         public IFormFile? ImageUpload { get; set; }
+
+        public virtual ICollection<Product>? Products { get; set; }
     }
 }

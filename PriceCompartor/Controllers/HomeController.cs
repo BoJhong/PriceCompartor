@@ -18,29 +18,16 @@ namespace PriceCompartor.Controllers
             _context = context;
         }
 
-        public IActionResult Index(int? categoryId, int page = 1)
+        public IActionResult Index()
         {
             ViewData["Categories"] = _context.Categories.ToList();
-            List<Product> products = (
-                categoryId != null
-                ? _context.Products.Where(p => p.CategoryId == categoryId)
-                : _context.Products
-            )
-            .Include(p => p.Categories)
-            .Include(p => p.Platforms).ToList();
+            List<Product> products = _context.Products
+                .OrderBy(p => Guid.NewGuid())
+                .Take(60)
+                .Include(p => p.Categories)
+                .Include(p => p.Platforms).ToList();
 
-            const int pageSize = 40;
-            if (page < 1) page = 1;
-
-            var pager = new Pager(products.Count(), page, pageSize);
-
-            int recSkip = (page - 1) * pageSize;
-
-            var data = products.Skip(recSkip).Take(pager.PageSize).ToList();
-
-            this.ViewBag.Pager = pager;
-
-            return View(data);
+            return View(products);
         }
 
         public IActionResult Privacy()

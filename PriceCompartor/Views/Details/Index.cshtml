@@ -1,0 +1,83 @@
+﻿@model ProductViewModel
+@{
+    ViewData["Title"] = "商品詳情";
+    var category = Model.Product.Categories;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+        @if (category != null)
+        {
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" asp-route-categoryId="@category.Id">@category.Name</a></li>
+        }
+        <li class="breadcrumb-item active" aria-current="page">@Model.Product.Name</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-4">
+        <img src="@Model.Product.ImageUrl" class="img-fluid rounded" />
+    </div>
+    <div class="col-md-8">
+        <h4>@Model.Product.Name</h4>
+        <p>@Model.Product.Description</p>
+        <p>價格: @Model.Product.Price</p>
+        <p>銷售量: >@Model.Product.Sales</p>
+        <p>連結: <a href="@Model.Product.Link" target="_blank">@Model.Product.Link</a></p>
+        <p>分類: @Model.Product.Categories?.Name</p>
+        <p>平台: @Model.Product.Platforms?.Name</p>
+    </div>
+
+</div>
+
+
+@if (Model.PriceHistory != null)
+{
+    <div>
+        <canvas id="myLineChart" height="300"></canvas>
+    </div>
+}
+
+<script src="~/js/chart.umd.min.js"></script>
+
+@if (Model.PriceHistory != null)
+{
+    <script>
+        const data = {
+            labels: @Html.Raw(Json.Serialize(Model.PriceHistory.Select(p => p.DateTime.ToString("yyyy-MM-dd HH:mm")))),
+            datasets: [{
+                label: '商品',
+                data: @Html.Raw(Json.Serialize(Model.PriceHistory.Select(p => p.Price))),
+                fill: 'start',
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.1
+            }]
+        };
+
+        const config = {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                type: 'time',
+                ticks: {
+                    autoSkip: true,
+                    maxTicksLimit: 6
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        };
+
+        const myLineChart = new Chart(document.getElementById('myLineChart'), config);
+
+    </script>
+}

@@ -1,6 +1,6 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
 using PriceCompartor.Utilities;
@@ -10,12 +10,12 @@ namespace PriceCompartor.Controllers
     public class SearchController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly WebCrawler _webCrawler;
+        private readonly IMemoryCache _cache;
 
-        public SearchController(ApplicationDbContext context)
+        public SearchController(ApplicationDbContext context, IMemoryCache memoryCache)
         {
             _context = context;
-            _webCrawler = new WebCrawler(context);
+            _cache = memoryCache;
         }
 
         public FileContentResult? GetPlatformImage(int id)
@@ -34,6 +34,7 @@ namespace PriceCompartor.Controllers
             ViewData["keyword"] = keyword;
             if (!string.IsNullOrEmpty(keyword))
             {
+                WebCrawler _webCrawler = new WebCrawler(_context);
                 var products = await _webCrawler.GetProducts(keyword, page);
                 foreach (var product in products)
                 {
@@ -58,6 +59,9 @@ namespace PriceCompartor.Controllers
                 int recSkip = (page - 1) * pageSize;
 
                 this.ViewBag.Pager = pager;
+
+                // 清除分類數量的緩存
+                _cache.Remove("ProductCounts");
 
                 return View(products);
             }
