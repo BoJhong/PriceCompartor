@@ -12,7 +12,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-primary border-bottom box-shadow mb-3" data-bs-theme="dark">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-primary border-bottom box-shadow mb-3 navbar-dark">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PriceCompartor</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -24,12 +24,22 @@
                         <li class="nav-item">
                             @Html.ActionLink("Home", "Index", "Home", new { area = "Admin" }, new { @class = $"nav-link{(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? " active" : "")}" })
                         </li>
-                        <li class="nav-item">
-                            @Html.ActionLink("App Roles", "Index", "AppRoles", new { area = "Admin" }, new { @class = $"nav-link{(ViewContext.RouteData.Values["Controller"]?.ToString() == "AppRoles" ? " active" : "")}" })
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Account
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li class="nav-item">
+                                    @Html.ActionLink("App Role", "Index", "AppRole", new { area = "Admin" }, new { @class = $"text-dark nav-link{(ViewContext.RouteData.Values["Controller"]?.ToString() == "AppRole" ? " active" : "")}" })
+                                </li>
+                                <li class="nav-item">
+                                    @Html.ActionLink("App User", "Index", "AppUser", new { area = "Admin" }, new { @class = $"text-dark nav-link{(ViewContext.RouteData.Values["Controller"]?.ToString() == "AppUser" ? " active" : "")}" })
+                                </li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
+                        @*<li class="nav-item">
                             @Html.ActionLink("Leads", "Index", "Leads", new { area = "Admin" }, new { @class = $"nav-link{(ViewContext.RouteData.Values["Controller"]?.ToString() == "Leads" ? " active" : "")}" })
-                        </li>
+                        </li>*@
                         <li class="nav-item">
                             @Html.ActionLink("Category", "Index", "Category", new { area = "Admin" }, new { @class = $"nav-link{(ViewContext.RouteData.Values["Controller"]?.ToString() == "Category" ? " active" : "")}" })
                         </li>

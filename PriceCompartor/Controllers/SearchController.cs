@@ -11,11 +11,13 @@ namespace PriceCompartor.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMemoryCache _cache;
+        private readonly WebCrawler _webCrawler;
 
-        public SearchController(ApplicationDbContext context, IMemoryCache memoryCache)
+        public SearchController(ApplicationDbContext context, IMemoryCache memoryCache, WebCrawler webCrawler)
         {
             _context = context;
             _cache = memoryCache;
+            _webCrawler = webCrawler;
         }
 
         public FileContentResult? GetPlatformImage(int id)
@@ -34,7 +36,6 @@ namespace PriceCompartor.Controllers
             ViewData["keyword"] = keyword;
             if (!string.IsNullOrEmpty(keyword))
             {
-                WebCrawler _webCrawler = new WebCrawler(_context);
                 var products = await _webCrawler.GetProducts(keyword, page);
                 foreach (var product in products)
                 {

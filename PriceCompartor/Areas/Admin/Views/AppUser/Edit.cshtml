@@ -1,0 +1,40 @@
+﻿@model PriceCompartor.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Update Product";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div class="row">
+    <form asp-action="Edit">
+        <input type="hidden" asp-asp-for="Id" />
+        <div class="col-md-4">
+            <div class="form-group mt-2">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="Nickname" class="control-label"></label>
+                <input asp-for="Nickname" class="form-control" />
+                <span asp-validation-for="Nickname" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label class="control-label">Roles</label>
+                @foreach (SelectListItem role in ViewBag.Roles)
+                {
+                    <div class="form-check">
+                        <input type="checkbox" name="roles" value="@role.Value" class="form-check-input" @(role.Selected ? "checked" : "") />
+                        <label asp-for="@role.Value" class="form-check-label">@role.Text</label>
+                    </div>
+                }
+            </div>
+            <div class="form-group mt-2">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-success">Back to List</a>
+            </div>
+        </div>
+    </form>
+</div>
+

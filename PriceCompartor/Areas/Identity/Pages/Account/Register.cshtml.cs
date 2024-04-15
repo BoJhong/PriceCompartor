@@ -79,12 +79,19 @@ namespace PriceCompartor.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
-            [Display(Name = "First Name")]
-            public string FirstName { get; set; }
+            [Display(Name = "Nickname")]
+            public string Nickname { get; set; }
 
             [Required]
-            [Display(Name = "Last Name")]
-            public string LastName { get; set; }
+            [Display(Name = "Birth Date")]
+            [DataType(DataType.Date)]
+            public DateTime DOB { get; set; }
+
+            [Required]
+            [Display(Name = "Gender")]
+            public GenderType Gender { get; set; }
+
+            public DateTime RegistrationDate { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -148,8 +155,10 @@ namespace PriceCompartor.Areas.Identity.Pages.Account
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
-                user.FirstName = Input.FirstName;
-                user.LastName = Input.LastName;
+                user.Nickname = Input.Nickname;
+                user.DOB = Input.DOB;
+                user.Gender = Input.Gender;
+                user.RegistrationDate = DateTime.Now;
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 

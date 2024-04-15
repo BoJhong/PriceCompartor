@@ -1,0 +1,71 @@
+﻿@model IEnumerable<PriceCompartor.Models.ViewModels.ApplicationUserViewModel>
+
+@{
+    ViewData["Title"] = "Application Users";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>
+    <a asp-action="Create" class="btn btn-primary btn-sm">Create New User</a>
+</p>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.User.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.Nickname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.RegistrationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoleName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if(Model != null && Model.Any())
+        {
+            @foreach(var userVM in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => userVM.User.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => userVM.User.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => userVM.User.Nickname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => userVM.User.RegistrationDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => userVM.RoleName)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@userVM.User.Id" class="btn btn-success btn-sm">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@userVM.User.Id" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5">
+                    <div>
+                        Application users not available in the database.
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

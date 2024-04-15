@@ -1,4 +1,5 @@
 ﻿@page
+@using PriceCompartor.Models
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
@@ -15,15 +16,17 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
 
             <div class="form-floating mb-3">
-                <input asp-for="Input.FirstName" class="form-control" autocomplete="first-name" aria-required="true" placeholder="First Name" />
-                <label asp-for="Input.FirstName">First Name</label>
-                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                <input asp-for="Input.Nickname" class="form-control" autocomplete="nickname" aria-required="true" placeholder="Nickname" />
+                <label asp-for="Input.Nickname">Name</label>
+                <span asp-validation-for="Input.Nickname" class="text-danger"></span>
             </div>
 
-            <div class="form-floating mb-3">
-                <input asp-for="Input.LastName" class="form-control" autocomplete="last-name" aria-required="true" placeholder="Last Name" />
-                <label asp-for="Input.LastName">Last Name</label>
-                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+            <div class="form-group">
+                <label asp-for="Input.Gender" ></label>
+                <select asp-for="Input.Gender" class="form-select" asp-items="Html.GetEnumSelectList<GenderType>()">
+                    <option disabled selected>--Select Gender--</option>
+                </select>
+                <span asp-validation-for="Input.Gender" class="text-danger"></span>
             </div>
 
             <div class="form-floating mb-3">
