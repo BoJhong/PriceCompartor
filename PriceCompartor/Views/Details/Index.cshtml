@@ -1,7 +1,7 @@
-﻿@model ProductViewModel
+﻿@model Product
 @{
     ViewData["Title"] = "商品詳情";
-    var category = Model.Product.Categories;
+    var category = Model.Categories;
 }
 
 <nav aria-label="breadcrumb">
@@ -11,71 +11,53 @@
         {
             <li class="breadcrumb-item"><a asp-controller="Category" asp-action="Index" asp-route-id="@category.Id">@category.Name</a></li>
         }
-        <li class="breadcrumb-item active" aria-current="page">@Model.Product.Name</li>
+        else
+        {
+            <li class="breadcrumb-item"><a asp-controller="Category" asp-action="Index" asp-route-id="0">Uncategorized</a></li>
+        }
+        <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
     </ol>
 </nav>
 
 <div class="row">
-    <div class="col-md-4">
-        <img src="@Model.Product.ImageUrl" class="img-fluid rounded" />
+    <div class="col-md-4 d-flex justify-content-center">
+        <img src="@Model.ImageUrl" class="img-fluid object-fit-cover rounded" style="max-height: 320px" />
     </div>
-    <div class="col-md-8">
-        <h4>@Model.Product.Name</h4>
-        <p>@Model.Product.Description</p>
-        <p>價格: @Model.Product.Price</p>
-        <p>銷售量: >@Model.Product.Sales</p>
-        <p>連結: <a href="@Model.Product.Link" target="_blank">@Model.Product.Link</a></p>
-        <p>分類: @Model.Product.Categories?.Name</p>
-        <p>平台: @Model.Product.Platforms?.Name</p>
+    <div class="col-md-8 h-auto">
+        <h4>@Model.Name</h4>
+        <p>@Model.Description</p>
+        <p>價格: @Model.Price</p>
+        <p>銷售量: >@Model.Sales</p>
+        <p>平台: 
+            <img src="@Model.PlatformImageSrc" class="object-fit-cover rounded" style="max-width: 30px" />
+            @Model.Platforms?.Name
+        </p>
+        <div class="text-center mt-auto">
+            <a href="@Model.Link" class="btn btn-primary">
+                前往 @Model.Platforms?.Name 購買
+            </a>
+            <a href="@Model.Link" class="btn btn-success">
+                <i class="fa-solid fa-cart-shopping"></i>
+                在此購買
+            </a>
+            <a href="@Model.Link" class="btn btn-warning">
+                <i class="fa-regular fa-star"></i>
+                加入收藏
+            </a>
+        </div>
     </div>
 </div>
-
-@if (Model.PriceHistory != null)
-{
-    <div>
-        <canvas id="myLineChart" height="300"></canvas>
+<vc:price-history product-id="@Model.Id" />
+<hr />
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">商品介紹</button>
+        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">商品評價</button>
+        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">相關類別</button>
     </div>
-}
-
-<script src="~/lib/Chart.js/dist/chart.umd.min.js"></script>
-
-@if (Model.PriceHistory != null)
-{
-    <script>
-        const data = {
-            labels: @Html.Raw(Json.Serialize(Model.PriceHistory.Select(p => p.DateTime.ToString("yyyy-MM-dd HH:mm")))),
-            datasets: [{
-                label: '商品',
-                data: @Html.Raw(Json.Serialize(Model.PriceHistory.Select(p => p.Price))),
-                fill: 'start',
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                tension: 0.1
-            }]
-        };
-
-        const config = {
-            type: 'line',
-            data: data,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                type: 'time',
-                ticks: {
-                    autoSkip: true,
-                    maxTicksLimit: 6
-                },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
-            }
-        };
-
-        const myLineChart = new Chart(document.getElementById('myLineChart'), config);
-
-    </script>
-}
+</nav>
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">@Html.Raw(Model.Description)</div>
+    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">...</div>
+    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
+</div>

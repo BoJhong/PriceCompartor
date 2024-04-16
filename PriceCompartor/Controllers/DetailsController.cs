@@ -25,18 +25,7 @@ namespace PriceCompartor.Controllers
 
             if (product == null) return NotFound();
 
-            var productVM = new ProductViewModel
-            {
-                Product = product,
-                PriceHistory = null
-            };
-
-            if (product.OId != null)
-            {
-                productVM.PriceHistory = await _webCrawler.GetPriceHistory(product.OId);
-            }
-
-            return View(productVM);
+            return View(product);
         }
     }
 }

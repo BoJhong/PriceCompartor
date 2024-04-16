@@ -1,0 +1,47 @@
+﻿@model List<PriceCompartor.Models.PriceHistroy>
+@if (Model != null && Model.Any())
+{
+    <div>
+        <canvas id="myLineChart" height="300"></canvas>
+    </div>
+
+    <script src="~/lib/Chart.js/dist/chart.umd.min.js"></script>
+
+    <script>
+        const data = {
+            labels: @Html.Raw(Json.Serialize(Model.Select(p => p.DateTime.ToString("yyyy-MM-dd HH:mm")))),
+            datasets: [{
+                label: '商品',
+                data: @Html.Raw(Json.Serialize(Model.Select(p => p.Price))),
+                fill: 'start',
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.1
+            }]
+        };
+
+        const config = {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                type: 'time',
+                ticks: {
+                    autoSkip: true,
+                    maxTicksLimit: 6
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        };
+
+        const myLineChart = new Chart(document.getElementById('myLineChart'), config);
+
+    </script>
+}

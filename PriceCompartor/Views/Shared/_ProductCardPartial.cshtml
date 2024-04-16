@@ -13,10 +13,6 @@
                                 @product.Name
                             </div>
                         </a>
-                        @if (!string.IsNullOrEmpty(product.Description))
-                        {
-                            <p class="card-text">@product.Description</p>
-                        }
                         <div class="text-danger fw-bold">@product.Price.ToString("C0")</div>
                         <div class="text-primary mb-2" style="font-size: 0.8rem;">總銷量>@product.Sales</div>
                         <div class="text-center">
