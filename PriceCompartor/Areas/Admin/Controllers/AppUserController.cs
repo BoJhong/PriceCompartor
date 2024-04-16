@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PriceCompartor.Models;
 using PriceCompartor.Models.ViewModels;
+using System.Data;
 
 namespace PriceCompartor.Areas.Admin.Controllers
 {
@@ -103,16 +104,24 @@ namespace PriceCompartor.Areas.Admin.Controllers
             return View(user);
         }
 
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(string id)
         {
             var user = _userManager.FindByIdAsync(id).GetAwaiter().GetResult();
-            if (user != null)
+            if (user == null) return NotFound();
+            var result = _userManager.DeleteAsync(user).GetAwaiter().GetResult();
+            if (result.Succeeded)
             {
-                _userManager.DeleteAsync(user).GetAwaiter().GetResult();
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
+            return View("Index");
         }
     }
 }
