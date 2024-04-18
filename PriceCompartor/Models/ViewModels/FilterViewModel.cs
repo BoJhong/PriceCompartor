@@ -13,9 +13,9 @@ namespace PriceCompartor.Models.ViewModels
         public int? MaxPrice { get; set; }
 
         [Display(Name = "排序")]
-        public SortOrderType? SelectedSortOrder { get; set; }
+        public SortOrderType SelectedSortOrder { get; set; } = SortOrderType.NameAsc;
 
         [Display(Name = "平台")]
-        public List<SelectListItem> PlatformCheckboxes { get; set; }
+        public required List<SelectListItem> PlatformCheckboxes { get; set; }
     }
 }

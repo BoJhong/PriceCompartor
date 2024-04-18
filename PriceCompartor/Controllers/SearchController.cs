@@ -23,11 +23,24 @@ namespace PriceCompartor.Controllers
             _webCrawler = new WebCrawler(_context);
         }
 
-        public async Task<IActionResult> Index(string? keyword, int page = 1)
+        public IActionResult Index(bool filterIsValid, FilterViewModel model, string[] filter, string? keyword, int page = 1)
         {
-            List<Product> products = await GetProducts(keyword, page);
+            if (Request.Headers.ContainsKey("Referer"))
+            {
+                // 取得 Referer 標頭中的 URL
+                string refererUrl = Request.Headers["Referer"].ToString();
 
-            return View(products);
+                // 重新導向至上一頁
+                return Redirect(refererUrl);
+            }
+
+            if (filterIsValid)
+            {
+                model.PlatformCheckboxes = _context.Platforms.Select(p => new SelectListItem { Text = p.Name, Value = p.Id.ToString(), Selected = filter.Contains(p.Id.ToString()) }).ToList();
+                HttpContext.Session.SetJson("Filter", model);
+            }
+
+            return View(GetProducts(keyword, page).Result);
         }
 
         [NonAction]
@@ -68,19 +81,6 @@ namespace PriceCompartor.Controllers
             _cache.Remove("ProductCounts");
 
             return products;
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Index(FilterViewModel model, string[] filter)
-        {
-            if (model != null)
-            {
-                model.PlatformCheckboxes = _context.Platforms.Select(p => new SelectListItem { Text = p.Name, Value = p.Id.ToString(), Selected = filter.Contains(p.Id.ToString()) }).ToList();
-                HttpContext.Session.SetJson("Filter", model);
-            }
-
-            return RedirectToAction(nameof(Index), "Search");
         }
     }
 }

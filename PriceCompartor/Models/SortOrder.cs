@@ -2,10 +2,10 @@
 {
     public enum SortOrderType
     {
-        PriceAsc,
-        PriceDesc,
         NameAsc,
         NameDesc,
+        PriceAsc,
+        PriceDesc,
         RatingAsc,
         RatingDesc,
         SalesAsc,
@@ -22,10 +22,10 @@
         {
             return orderByType switch
             {
-                SortOrderType.PriceAsc => "Price: Low to High",
-                SortOrderType.PriceDesc => "Price: High to Low",
                 SortOrderType.NameAsc => "Name: A to Z",
                 SortOrderType.NameDesc => "Name: Z to A",
+                SortOrderType.PriceAsc => "Price: Low to High",
+                SortOrderType.PriceDesc => "Price: High to Low",
                 SortOrderType.RatingAsc => "Rating: Low to High",
                 SortOrderType.RatingDesc => "Rating: High to Low",
                 SortOrderType.SalesAsc => "Sales: Low to High",

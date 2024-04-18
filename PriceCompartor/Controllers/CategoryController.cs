@@ -20,11 +20,15 @@ namespace PriceCompartor.Controllers
             _context = context;
         }
 
-        public IActionResult Index(int? id, int page = 1)
+        public IActionResult Index(bool filterIsValid, FilterViewModel model, string[] filter, int? id, int page = 1)
         {
-            List<Product> products = GetProducts(id, page);
+            if (filterIsValid)
+            {
+                model.PlatformCheckboxes = _context.Platforms.Select(p => new SelectListItem { Text = p.Name, Value = p.Id.ToString(), Selected = filter.Contains(p.Id.ToString()) }).ToList();
+                HttpContext.Session.SetJson("Filter", model);
+            }
 
-            return View(products);
+            return View(GetProducts(id, page));
         }
 
         [NonAction]
@@ -60,19 +64,6 @@ namespace PriceCompartor.Controllers
             ViewBag.Pager = pager;
 
             return data;
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Index(FilterViewModel model, string[] filter)
-        {
-            if (model != null)
-            {
-                model.PlatformCheckboxes = _context.Platforms.Select(p => new SelectListItem { Text = p.Name, Value = p.Id.ToString(), Selected = filter.Contains(p.Id.ToString()) }).ToList();
-                HttpContext.Session.SetJson("Filter", model);
-            }
-
-            return RedirectToAction(nameof(Index), "Category");
         }
 
         public IActionResult Privacy()
