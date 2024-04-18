@@ -48,17 +48,25 @@ namespace PriceCompartor.Controllers
         public FileContentResult? GetPlatformImage(int id)
         {
             // 嘗試從快取中取得圖片資料
-            if (_cache.TryGetValue($"PlatformImage_{id}", out byte[]? cachedImage))
+            if (_cache.TryGetValue($"PlatformImage_{id}", out ImageItem? cachedItem))
             {
-                if (cachedImage == null) return null;
-                return File(cachedImage, "image/jpeg"); // 假設圖片格式是 JPEG
+                if (cachedItem?.Data == null || cachedItem.MimeType == null)
+                {
+                    return null;
+                }
+                return File(cachedItem.Data, cachedItem.MimeType);
             }
 
             var photo = _context.Platforms.Find(id);
             if (photo != null && photo.PhotoFile != null && photo.ImageMimeType != null)
             {
                 // 將圖片資料存入快取，有效期限為 10 分鐘
-                _cache.Set($"PlatformImage_{id}", photo.PhotoFile, TimeSpan.FromMinutes(10));
+                var cacheItem = new ImageItem
+                {
+                    Data = photo.PhotoFile,
+                    MimeType = photo.ImageMimeType
+                };
+                _cache.Set($"PlatformImage_{id}", cacheItem, TimeSpan.FromMinutes(10));
                 return File(photo.PhotoFile, photo.ImageMimeType);
             }
 
