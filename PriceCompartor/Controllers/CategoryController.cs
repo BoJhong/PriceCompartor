@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
 using PriceCompartor.Models.ViewModels;
+using PriceCompartor.Utilities;
 using System.Diagnostics;
 
 namespace PriceCompartor.Controllers
@@ -20,6 +22,14 @@ namespace PriceCompartor.Controllers
 
         public IActionResult Index(int? id, int page = 1)
         {
+            List<Product> products = GetProducts(id, page);
+
+            return View(products);
+        }
+
+        [NonAction]
+        private List<Product> GetProducts(int? id, int page = 1)
+        {
             ViewData["Categories"] = _context.Categories.ToList();
             ViewData["SelectedCategory"] = id;
 
@@ -34,6 +44,11 @@ namespace PriceCompartor.Controllers
             .Include(p => p.Platforms).ToList();
 
             const int pageSize = 60;
+
+            ProductFilter productFilter = new ProductFilter(_context);
+
+            products = productFilter.Filter(HttpContext, products);
+
             if (page < 1) page = 1;
 
             var pager = new Pager(products.Count(), page, pageSize);
@@ -42,9 +57,22 @@ namespace PriceCompartor.Controllers
 
             var data = products.Skip(recSkip).Take(pager.PageSize).ToList();
 
-            this.ViewBag.Pager = pager;
+            ViewBag.Pager = pager;
 
-            return View(data);
+            return data;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Index(FilterViewModel model, string[] filter)
+        {
+            if (model != null)
+            {
+                model.PlatformCheckboxes = _context.Platforms.Select(p => new SelectListItem { Text = p.Name, Value = p.Id.ToString(), Selected = filter.Contains(p.Id.ToString()) }).ToList();
+                HttpContext.Session.SetJson("Filter", model);
+            }
+
+            return RedirectToAction(nameof(Index), "Category");
         }
 
         public IActionResult Privacy()

@@ -1,6 +1,6 @@
 ﻿@model List<Product>
 @{
-    string? keyword = ViewData["keyword"]?.ToString();
+    string? keyword = ViewContext.HttpContext.Request.Query["keyword"];
     ViewData["Title"] = keyword;
 
     Pager pager = new Pager();
@@ -11,56 +11,32 @@
     }
 }
 
-
-<div class="container">
-    <div class="text-center m-4">
-        <h2>搜索結果: @ViewData["Title"]</h1>
-    </div>
-    <div class="row flex-center">
-        @foreach (var product in Model)
-        {
-            string imageUrl = !string.IsNullOrEmpty(product.ImageUrl) ? product.ImageUrl : "https://media.istockphoto.com/id/1409329028/zh/%E5%90%91%E9%87%8F/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=UNoD6tnZhsUwykY-JjiLeIePaay0YbVM6P9XxrE-fZo=";
-            <div class="card col-md-5 col-lg-3 col-xl-2 p-0">
-                <a href=@product.Link>
-                    <img src=@imageUrl class="card-img-top object-fit-cover" style="aspect-ratio: 1/1;">
-                    <div class="card-body px-2">
-                        <div class="card-title title-truncation" style="font-size: 0.9rem; height: 2.5rem;">
-                            @product.Name
-                        </div>
-                        @if (!string.IsNullOrEmpty(product.Description)) {
-                            <p class="card-text">@product.Description</p>
-                        }
-                        <img src="@Url.Action("GetPlatformImage",new { id=product.PlatformId})" width="24" height="24" class="object-fit-cover" />
-                        <div class="text-danger fw-bold">@product.Price.ToString("C0")</div>
-                        <div class="text-primary" style="font-size: 0.8rem;">總銷量>@product.Sales</div>
-                    </div>
-                </a>
-            </div>
-        }
-    </div>
-    @if (pager.TotalPages > 0)
-    {
-        <nav aria-label="Page navigation" class="mt-4">
-            <ul class="pagination justify-content-center">
-                <li class="page-item">
-                    <a class="page-link" asp-controller="Search" asp-action="Index" asp-route-page="1" asp-route-keyword="@keyword">«</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" asp-controller="Search" asp-action="Index" asp-route-page="@(pager.CurrentPage - 1)" asp-route-keyword="@keyword">‹</a>
-                </li>
-                @for (var pge = pager.StartPage; pge <= pager.EndPage; pge++)
-                {
-                    <li class="page-item @(pge == pager.CurrentPage ? "active" : "")">
-                        <a class="page-link" asp-controller="Search" asp-action="Index" asp-route-page="@pge" asp-route-keyword="@keyword">@pge</a>
-                    </li>
-                }
-                <li class="page-item">
-                    <a class="page-link" asp-controller="Search" asp-action="Index" asp-route-page="@(pager.CurrentPage + 1)" asp-route-keyword="@keyword">›</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" asp-controller="Search" asp-action="Index" asp-route-page="@(pager.TotalPages)" asp-route-keyword="@keyword">»</a>
-                </li>
-            </ul>
-        </nav>
-    }
+<div class="text-center m-4">
+    <h2>搜索結果: @ViewData["Title"]</h2>
 </div>
+<partial name="_ProductCardPartial" model=Model />
+@if (pager.TotalPages > 0)
+{
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <a class="page-link" asp-controller="Search" asp-action="Index" asp-route-page="1" asp-route-keyword="@keyword">«</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" asp-controller="Search" asp-action="Index" asp-route-page="@(pager.CurrentPage - 1)" asp-route-keyword="@keyword">‹</a>
+            </li>
+            @for (var pge = pager.StartPage; pge <= pager.EndPage; pge++)
+            {
+                <li class="page-item @(pge == pager.CurrentPage ? "active" : "")">
+                    <a class="page-link" asp-controller="Search" asp-action="Index" asp-route-page="@pge" asp-route-keyword="@keyword">@pge</a>
+                </li>
+            }
+            <li class="page-item">
+                <a class="page-link" asp-controller="Search" asp-action="Index" asp-route-page="@(pager.CurrentPage + 1)" asp-route-keyword="@keyword">›</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" asp-controller="Search" asp-action="Index" asp-route-page="@(pager.TotalPages)" asp-route-keyword="@keyword">»</a>
+            </li>
+        </ul>
+    </nav>
+}

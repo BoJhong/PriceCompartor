@@ -62,6 +62,7 @@ namespace PriceCompartor.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                model.NormalizedName = model.Name?.ToUpper();
                 _context.Update(model);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

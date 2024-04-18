@@ -1,0 +1,25 @@
+﻿@model List<Product>
+
+<div class="container-fluid">
+    <h4>商品排行榜</h4>
+    @foreach (var product in Model)
+    {
+        <div class="card mb-3" style="max-width: 540px;">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="@product.ImageUrl" class="img-fluid rounded-start object-fit-cover h-100" alt="...">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <div class="card-text text-danger fw-bold">@product.Price.ToString("C0")</div>
+                        <div class="card-text text-primary mb-2" style="font-size: 0.8rem;">總銷量>@product.Sales</div>
+                        <a type="button" class="btn btn-primary btn-sm" href="@product.Link">前往購買</a>
+                        <a class="btn btn-info btn-sm" asp-controller="Details" asp-action="Index" asp-route-id="@product.Id"><i class="fa-regular fa-eye"></i></a>
+                        <a class="btn btn-success btn-sm" asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id"><i class="fa-solid fa-cart-shopping"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

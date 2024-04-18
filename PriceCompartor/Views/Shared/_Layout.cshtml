@@ -22,7 +22,7 @@
                 <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <form class="d-flex search p-0 rounded" action="@Url.Action("", "Search", System.Web.HttpUtility.UrlEncode(@ViewData["keyword"]?.ToString()))" method="get">
+                            <form class="d-flex search p-0 rounded" action="@Url.Action("Index", "Search", System.Web.HttpUtility.UrlEncode(@ViewData["keyword"]?.ToString()))" method="get">
                                 <input class="search-input text-dark" type="search" name="keyword" placeholder="Search" aria-label="Search" value=@ViewData["keyword"]?.ToString()>
                                 <button class="btn btn-secondary search-btn" type="submit"><i class="fa fa-search p-0"></i></button>
                             </form>
@@ -51,19 +51,17 @@
     <div class="custom-container">
         <main role="main" class="pb-3" style="padding-top: 77px;">
             <div class="d-flex flex-column flex-md-row row-gap-4 column-gap-4">
-                @if (!string.Equals(ViewContext.RouteData.Values["area"] as string, "Identity", System.StringComparison.OrdinalIgnoreCase)) {
-                    <div style="min-width:250px;">
-                        <vc:small-cart />
+                <div style="min-width:250px;">
+                    <vc:small-cart />
 
-                        <hr />
+                    <hr />
 
-                        <vc:filter />
+                    <vc:filter />
 
-                        <hr />
+                    <hr />
 
-                        <vc:categories />
-                    </div>
-                }
+                    <vc:categories />
+                </div>
                 <div class="flex-grow-1">
                     <partial name="_NotificationPartial" />
                     @RenderBody()

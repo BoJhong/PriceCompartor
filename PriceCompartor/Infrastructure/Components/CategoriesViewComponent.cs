@@ -28,8 +28,8 @@ namespace PriceCompartor.Infrastructure.Components
 
                 productCounts[-1] = await _context.Products.CountAsync();
 
-                // 設定快取項目並設定過期時間（這裡設定為5分鐘）
-                _cache.Set("ProductCounts", productCounts, TimeSpan.FromMinutes(5));
+                // 設定快取項目並設定過期時間（這裡設定為1小時）
+                _cache.Set("ProductCounts", productCounts, TimeSpan.FromHours(1));
             }
 
             var categories = await _context.Categories.Include(c => c.Products).ToListAsync();

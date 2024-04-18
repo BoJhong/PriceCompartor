@@ -41,10 +41,5 @@ namespace PriceCompartor.Models
         [FileExtension(["jpg", "jpeg", "png"])]
         [FileSize(1024 * 1024)]
         public IFormFile? ImageUpload { get; set; }
-
-
-        [NotMapped]
-        // 是否在過濾器中啟用
-        public bool filterEnabled { get; set; } = true;
     }
 }

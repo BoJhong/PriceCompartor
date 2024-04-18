@@ -1,15 +1,9 @@
-﻿using HtmlAgilityPack;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Playwright;
+﻿using Microsoft.Playwright;
 using Newtonsoft.Json.Linq;
-using NuGet.Packaging.Signing;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
-using System.Diagnostics;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using System.Xml;
 
 namespace PriceCompartor.Utilities
 {

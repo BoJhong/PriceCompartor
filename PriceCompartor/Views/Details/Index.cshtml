@@ -25,7 +25,6 @@
     </div>
     <div class="col-md-8 h-auto">
         <h4>@Model.Name</h4>
-        <p>@Model.Description</p>
         <p>價格: @Model.Price</p>
         <p>銷售量: >@Model.Sales</p>
         <p>平台: 
@@ -36,9 +35,9 @@
             <a href="@Model.Link" class="btn btn-primary">
                 前往 @Model.Platforms?.Name 購買
             </a>
-            <a href="@Model.Link" class="btn btn-success">
+            <a class="btn btn-success" asp-controller="Cart" asp-action="Add" asp-route-id="@Model.Id">
                 <i class="fa-solid fa-cart-shopping"></i>
-                在此購買
+                加入購物車
             </a>
             <a href="@Model.Link" class="btn btn-warning">
                 <i class="fa-regular fa-star"></i>
@@ -47,7 +46,9 @@
         </div>
     </div>
 </div>
+<div class="container">
 <vc:price-history product-id="@Model.Id" />
+</div>
 <hr />
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
