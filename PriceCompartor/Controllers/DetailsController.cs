@@ -4,6 +4,7 @@ using PriceCompartor.Infrastructure;
 
 namespace PriceCompartor.Controllers
 {
+    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
     public class DetailsController : Controller
     {
         private readonly ApplicationDbContext _context;

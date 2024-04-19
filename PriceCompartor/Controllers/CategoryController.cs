@@ -4,18 +4,16 @@ using Microsoft.EntityFrameworkCore;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
 using PriceCompartor.Models.ViewModels;
-using System.Diagnostics;
 
 namespace PriceCompartor.Controllers
 {
+    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
     public class CategoryController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
 
-        public CategoryController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public CategoryController(ApplicationDbContext context)
         {
-            _logger = logger;
             _context = context;
         }
 
@@ -63,17 +61,6 @@ namespace PriceCompartor.Controllers
             ViewBag.Pager = pager;
 
             return data;
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

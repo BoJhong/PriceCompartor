@@ -3,6 +3,7 @@ using PriceCompartor.Infrastructure;
 
 namespace PriceCompartor.Controllers
 {
+    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
     public class RankController : Controller
     {
         private readonly ApplicationDbContext _context;

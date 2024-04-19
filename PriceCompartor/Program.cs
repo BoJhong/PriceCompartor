@@ -28,6 +28,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddMemoryCache();
+builder.Services.AddResponseCaching();
 
 var app = builder.Build();
 
@@ -51,6 +52,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseResponseCaching();
 
 app.MapControllerRoute(
     name: "Areas",

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+ï»¿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using PriceCompartor.Infrastructure;
@@ -8,6 +8,7 @@ using System.Diagnostics;
 
 namespace PriceCompartor.Controllers
 {
+    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -32,6 +33,7 @@ namespace PriceCompartor.Controllers
             return View(products);
         }
 
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult GetMoreProducts()
         {
             List<Product> products = _context.Products
@@ -56,20 +58,10 @@ namespace PriceCompartor.Controllers
 
         public FileContentResult? GetPlatformImage(int id)
         {
-            // ¹Á¸Õ±q§Ö¨ú¤¤¨ú±o¹Ï¤ù¸ê®Æ
-            if (_cache.TryGetValue($"PlatformImage_{id}", out ImageItem? cachedItem))
-            {
-                if (cachedItem?.Data == null || cachedItem.MimeType == null)
-                {
-                    return null;
-                }
-                return File(cachedItem.Data, cachedItem.MimeType);
-            }
-
             var photo = _context.Platforms.Find(id);
             if (photo != null && photo.PhotoFile != null && photo.ImageMimeType != null)
             {
-                // ±N¹Ï¤ù¸ê®Æ¦s¤J§Ö¨ú¡A¦³®Ä´Á­­¬° 10 ¤ÀÄÁ
+                // å°‡åœ–ç‰‡è³‡æ–™å­˜å…¥å¿«å–ï¼Œæœ‰æ•ˆæœŸé™ç‚º 10 åˆ†é˜
                 var cacheItem = new ImageItem
                 {
                     Data = photo.PhotoFile,
