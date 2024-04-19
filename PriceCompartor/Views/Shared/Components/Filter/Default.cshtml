@@ -1,25 +1,11 @@
 ﻿@model FilterViewModel
 <div class="text-bg-light mb-3 p-3 rounded">
-    <form method="get" id="FilterForm" action="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Search" ? "" : Url.Action("Index", "Category"))">
+    <form method="get" id="filter-form" action="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Search" ? "" : Url.Action("Index", "Category"))">
         <input type="hidden" name="filterIsValid" value="true" />
         <input type="hidden" name="keyword" value="@ViewContext.HttpContext.Request.Query["keyword"]" />
         <input type="hidden" name="page" value="@ViewContext.HttpContext.Request.Query["page"]" />
 
         <div class="form-group">
-            <label asp-for="PlatformCheckboxes" class="form-label"></label>
-            <ul class="list-group">
-                @foreach (SelectListItem filter in Model.PlatformCheckboxes)
-                {
-                    <li class="list-group-item user-select-none">
-                        <img src="@Url.Action("GetPlatformImage", "Home",new { id=filter.Value })" width="31" class="object-fit-cover rounded" />
-                        <input id="@filter.Value" type="checkbox" name="Filter" value="@filter.Value" checked="@filter.Selected" />
-                        <label for="@filter.Value">@filter.Text</label>
-                    </li>
-                }
-            </ul>
-        </div>
-
-        <div class="form-group mt-2">
             <label asp-for="SelectedSortOrder" class="form-label"></label>
             <select asp-for="SelectedSortOrder" class="form-control">
                 @foreach (SortOrderType orderByType in Enum.GetValues(typeof(SortOrderType)))
@@ -38,23 +24,30 @@
             <input asp-for="MaxPrice" class="form-control" />
             <span asp-validation-for="MaxPrice" class="text-danger"></span>
         </div>
-
         <div class="form-group mt-2">
-            <button class="btn btn-primary btn-sm" action="submit" id="filterSubmit">
-                套用至@(ViewContext.RouteData.Values["controller"]?.ToString() == "Search" ? "搜尋" : "分類")頁面
-            </button>
+            <label asp-for="PlatformCheckboxes" class="form-label"></label>
+            <ul class="list-group">
+                @foreach (SelectListItem filter in Model.PlatformCheckboxes)
+                {
+                    <li class="list-group-item user-select-none">
+                        <img src="@Url.Action("GetPlatformImage", "Home",new { id=filter.Value })" width="31" class="object-fit-cover rounded" />
+                        <input id="@filter.Value" type="checkbox" name="Filter" value="@filter.Value" checked="@filter.Selected" />
+                        <label for="@filter.Value">@filter.Text</label>
+                    </li>
+                }
+            </ul>
         </div>
     </form>
 </div>
 
 <script>
-    $('#FilterForm input[type="checkbox"]').on('change', function () {
-        var form = $(this).closest('form');
-        form.submit();
-    });
+    $(function () {
+        $('#filter-form input').on('change', function () {
+            $("#filter-form").submit();
+        });
 
-    $('#FilterForm select').on('change', function () {
-        var form = $(this).closest('form');
-        form.submit();
-    });
+        $('#filter-form select').on('change', function () {
+            $("#filter-form").submit();
+        });
+    })
 </script>

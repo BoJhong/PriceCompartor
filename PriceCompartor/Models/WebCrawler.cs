@@ -1,11 +1,10 @@
 ﻿using Microsoft.Playwright;
 using Newtonsoft.Json.Linq;
 using PriceCompartor.Infrastructure;
-using PriceCompartor.Models;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace PriceCompartor.Utilities
+namespace PriceCompartor.Models
 {
     public class WebCrawler
     {
@@ -236,18 +235,29 @@ namespace PriceCompartor.Utilities
 
                 var doc = JsonDocument.Parse(responseBody);
                 var root = doc.RootElement;
+                List<PriceHistroy> priceHistoryResult = new List<PriceHistroy>();
+
+                // 判斷歷史價格的回傳結果是否成功
+                if (root.TryGetProperty("result", out JsonElement resultProperty))
+                {
+                    // 如果回傳結果為 false，代表沒有歷史價格資料
+                    if (resultProperty.ValueKind == JsonValueKind.False)
+                    {
+                        return priceHistoryResult;
+                    }
+                }
+
                 var priceHistory = root.GetProperty(id).GetProperty("price_history");
 
-                List<PriceHistroy> priceHistoryResult = new List<PriceHistroy>();
 
                 foreach (var history in priceHistory.EnumerateArray())
                 {
                     int price = history.GetProperty("y").GetInt32();
                     priceHistoryResult.Add(new PriceHistroy
-                        {
-                            Price = price,
-                            Timestamp = history.GetProperty("x").GetInt64()
-                        }
+                    {
+                        Price = price,
+                        Timestamp = history.GetProperty("x").GetInt64()
+                    }
                     );
                 }
 

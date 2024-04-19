@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PriceCompartor.Models;
-using PriceCompartor.Utilities;
 
 namespace PriceCompartor.Infrastructure.Components
 {

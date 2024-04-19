@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PriceCompartor.Infrastructure;
-using PriceCompartor.Models;
 using PriceCompartor.Models.ViewModels;
 
-namespace PriceCompartor.Utilities
+namespace PriceCompartor.Models
 {
     public class ProductFilter
     {

@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
 using PriceCompartor.Models.ViewModels;
-using PriceCompartor.Utilities;
 using System.Diagnostics;
 
 namespace PriceCompartor.Controllers
