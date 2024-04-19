@@ -40,5 +40,28 @@
     </button>
 </div>
 
-<partial name="_ProductCardPartial" model=Model />
+<div id="product-content" class="card-columns row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-4">
+    <partial name="_ProductCardPartial" model=Model />
+</div>
 
+<script>
+    $(function () {
+        function loadProductContent() {
+            $.ajax({
+                url: '/Home/GetMoreProducts',
+                type: 'GET',
+                success: function (data) {
+                    $('#product-content').append(data);
+                }
+            });
+        }
+
+        // 監聽滾動事件
+        $(window).scroll(function () {
+            if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+                // 當滾動到頁面底部時
+                loadProductContent(); // 載入更多內容
+            }
+        });
+    });
+</script>

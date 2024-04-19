@@ -25,15 +25,6 @@ namespace PriceCompartor.Controllers
 
         public IActionResult Index(bool filterIsValid, FilterViewModel model, string[] filter, string? keyword, int page = 1)
         {
-            if (Request.Headers.ContainsKey("Referer"))
-            {
-                // 取得 Referer 標頭中的 URL
-                string refererUrl = Request.Headers["Referer"].ToString();
-
-                // 重新導向至上一頁
-                return Redirect(refererUrl);
-            }
-
             if (filterIsValid)
             {
                 model.PlatformCheckboxes = _context.Platforms.Select(p => new SelectListItem { Text = p.Name, Value = p.Id.ToString(), Selected = filter.Contains(p.Id.ToString()) }).ToList();

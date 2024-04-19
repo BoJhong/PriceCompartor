@@ -22,8 +22,8 @@
                 <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <form class="d-flex search p-0 rounded" action="@Url.Action("Index", "Search", System.Web.HttpUtility.UrlEncode(@ViewData["keyword"]?.ToString()))" method="get">
-                                <input class="search-input text-dark" type="search" name="keyword" placeholder="Search" aria-label="Search" value=@ViewData["keyword"]?.ToString()>
+                            <form class="d-flex search p-0 rounded" action="@Url.Action("Index", "Search")" method="get">
+                                <input class="search-input text-dark" type="search" name="keyword" placeholder="Search" aria-label="Search" value="@ViewContext.HttpContext.Request.Query["keyword"]">
                                 <button class="btn btn-secondary search-btn" type="submit"><i class="fa fa-search p-0"></i></button>
                             </form>
                         </li>

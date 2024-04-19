@@ -23,8 +23,6 @@ namespace PriceCompartor.Controllers
 
         public IActionResult Index()
         {
-            ViewData["Categories"] = _context.Categories.ToList();
-
             List<Product> products = _context.Products
                 .OrderBy(p => Guid.NewGuid())
                 .Take(60)
@@ -32,6 +30,17 @@ namespace PriceCompartor.Controllers
                 .Include(p => p.Platforms).ToList();
 
             return View(products);
+        }
+
+        public IActionResult GetMoreProducts()
+        {
+            List<Product> products = _context.Products
+                .OrderBy(p => Guid.NewGuid())
+                .Take(60)
+                .Include(p => p.Categories)
+                .Include(p => p.Platforms).ToList();
+
+            return PartialView("_ProductCardPartial", products);
         }
 
         public IActionResult Privacy()

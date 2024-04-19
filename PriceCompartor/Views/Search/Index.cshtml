@@ -14,7 +14,11 @@
 <div class="text-center m-4">
     <h2>搜索結果: @ViewData["Title"]</h2>
 </div>
-<partial name="_ProductCardPartial" model=Model />
+
+<div id="content" class="card-columns row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-4">
+    <partial name="_ProductCardPartial" model=Model />
+</div>
+
 @if (pager.TotalPages > 0)
 {
     <nav aria-label="Page navigation" class="mt-4">
