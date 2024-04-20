@@ -1,0 +1,75 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@{
+    var user = await UserManager.GetUserAsync(User);
+}
+<form method="post" id="comment-form" asp-action="AddComment" asp-route-Id="@Model.Id">
+    <div class="row">
+        <div class="form-group">
+            <div class="d-flex">
+                <img class="mx-3 rounded-5" width="50" height="50" src="@user?.AvatarImageSrc" />
+                <div>
+                    <textarea class="form-control" type="text"
+                              rows="2" cols="50" placeholder="@(user == null ? "請先登入再進行評論" : $"以 {user.Nickname} 的身分進行評論")" name="content"></textarea>
+                    <div class="d-flex">
+                        <div class="rating">
+                            <input type="hidden" id="rating-value" name="rating" value="0">
+                            <input type="radio" name="rate" id="rate-5" data-value="5">
+                            <label for="rate-5" class="fas fa-star"></label>
+                            <input type="radio" name="rate" id="rate-4" data-value="4">
+                            <label for="rate-4" class="fas fa-star"></label>
+                            <input type="radio" name="rate" id="rate-3" data-value="3">
+                            <label for="rate-3" class="fas fa-star"></label>
+                            <input type="radio" name="rate" id="rate-2" data-value="2">
+                            <label for="rate-2" class="fas fa-star"></label>
+                            <input type="radio" name="rate" id="rate-1" data-value="1">
+                            <label for="rate-1" class="fas fa-star"></label>
+                        </div>
+                        <input class="btn btn-primary mt-2" style="margin-left: auto" type="submit" value="送出" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<style>
+    #comment-form .rating {
+        direction: rtl;
+    }
+
+    #comment-form .rating input {
+        display: none;
+    }
+
+    #comment-form .rating label {
+        font-size: 25px;
+        color: #444;
+        padding: 10px 0px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    #comment-form input:not(:checked) ~ label:hover,
+    #comment-form input:not(:checked) ~ label:hover ~ label {
+        color: #fd4;
+    }
+
+    #comment-form input:checked ~ label {
+        color: #fd4;
+    }
+
+    #comment-form input#rate-5:checked ~ label {
+        color: #fe7;
+        text-shadow: 0 0 5px #FFD2B2;
+    }
+</style>
+
+<script>
+    $(function () {
+        $('.rating input').click(function () {
+            var value = parseInt($(this).attr('data-value'));
+            console.log(value);
+            $('#rating-value').val(value);
+        });
+    });
+</script>

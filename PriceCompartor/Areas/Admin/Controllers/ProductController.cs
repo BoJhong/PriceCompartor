@@ -82,6 +82,7 @@ namespace PriceCompartor.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+            _cache.Remove("ProductCounts");
             return View(product);
         }
 

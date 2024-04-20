@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
@@ -133,6 +128,16 @@ namespace PriceCompartor.Areas.Admin.Controllers
                         return View();
                     }
                     await category.SetImageDataAsync(category.ImageUpload);
+                }
+                else
+                { 
+                    var existingCategory = await _context.Categories.FindAsync(id);
+                    if (existingCategory != null)
+                    {
+                        category.PhotoFile = existingCategory.PhotoFile;
+                        category.ImageMimeType = existingCategory.ImageMimeType;
+                        _context.Entry(existingCategory).State = EntityState.Detached;
+                    }
                 }
                 _context.Update(category);
                 await _context.SaveChangesAsync();

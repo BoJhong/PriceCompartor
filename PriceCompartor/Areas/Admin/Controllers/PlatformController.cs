@@ -128,6 +128,16 @@ namespace PriceCompartor.Areas.Admin.Controllers
                     }
                     await platform.SetImageDataAsync(platform.ImageUpload);
                 }
+                else
+                {
+                    var existingPlatform = await _context.Platforms.FindAsync(id);
+                    if (existingPlatform != null)
+                    {
+                        platform.PhotoFile = existingPlatform.PhotoFile;
+                        platform.ImageMimeType = existingPlatform.ImageMimeType;
+                        _context.Entry(existingPlatform).State = EntityState.Detached;
+                    }
+                }
                 _context.Update(platform);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
