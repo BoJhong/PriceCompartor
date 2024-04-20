@@ -1,15 +1,17 @@
-﻿@model Product
+﻿@using Microsoft.AspNetCore.Identity
+@model Product
+@inject UserManager<ApplicationUser> UserManager
 @{
     ViewData["Title"] = "商品詳情";
-    var category = Model.Categories;
+    var user = await UserManager.GetUserAsync(User);
 }
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-controller="Category" asp-action="Index">分類</a></li>
-        @if (category != null)
+        @if (@Model.Category != null)
         {
-            <li class="breadcrumb-item"><a asp-controller="Category" asp-action="Index" asp-route-id="@category.Id">@category.Name</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Category" asp-action="Index" asp-route-id="@Model.Category.Id">@Model.Category.Name</a></li>
         }
         else
         {
@@ -19,46 +21,173 @@
     </ol>
 </nav>
 
-<div class="row">
-    <div class="col-md-4 d-flex justify-content-center">
-        <img src="@Model.ImageUrl" class="img-fluid object-fit-cover rounded" style="max-height: 320px" />
+<div class="row g-4">
+    <div class="col-md-4 d-flex justify-content-center align-content-center flex-column">
+        <div>
+            <img src="@Model.ImageUrl" class="object-fit-cover rounded w-100" height="420" />
+        </div>
     </div>
     <div class="col-md-8 h-auto">
         <h4>@Model.Name</h4>
-        <p>價格: @Model.Price</p>
-        <p>銷售量: >@Model.Sales</p>
-        <p>平台: 
-            <img src="@Model.PlatformImageSrc" class="object-fit-cover rounded" style="max-width: 30px" />
-            @Model.Platforms?.Name
-        </p>
-        <div class="text-center mt-auto">
-            <a href="@Model.Link" class="btn btn-primary">
-                前往 @Model.Platforms?.Name 購買
-            </a>
-            <a class="btn btn-success" asp-controller="Cart" asp-action="Add" asp-route-id="@Model.Id">
-                <i class="fa-solid fa-cart-shopping"></i>
-                加入購物車
-            </a>
-            <a href="@Model.Link" class="btn btn-warning">
-                <i class="fa-regular fa-star"></i>
-                加入收藏
-            </a>
-        </div>
+        <p class="p-2 bg-light text-secondary rounded h4">$@Model.Price</p>
+        @for (int i = 0; i < 5; i++)
+        {
+            <i class="fa-solid fa-star @(i < @Model.Rating ? "text-warning" : "text-muted")"></i>
+        }
+        <span>@Model.Rating <span class="text-muted">(共 @Model.TotalRatingCount 人評分)</span></span>
+        <vc:price-history product-id="@Model.Id" />
     </div>
-</div>
-<div class="container">
-<vc:price-history product-id="@Model.Id" />
+    <div class="text-center my-4">
+        <a href="@Model.Link" class="btn btn-primary" target="_blank">
+            前往 @Model.Platform?.Name 購買
+        </a>
+        <a class="btn btn-success" asp-controller="Cart" asp-action="Add" asp-route-id="@Model.Id">
+            <i class="fa-solid fa-cart-shopping"></i>
+            加入購物車
+        </a>
+        <a href="@Model.Link" class="btn btn-warning">
+            <i class="fa-regular fa-star"></i>
+            加入收藏
+        </a>
+    </div>
 </div>
 <hr />
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">商品介紹</button>
-        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">商品評價</button>
-        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">相關類別</button>
+        <button class="nav-link active" id="nav-intro-tab" data-bs-toggle="tab" data-bs-target="#nav-intro" type="button" role="tab" aria-controls="nav-intro" aria-selected="true">商品介紹</button>
+        <button class="nav-link" id="nav-comment-tab" data-bs-toggle="tab" data-bs-target="#nav-comment" type="button" role="tab" aria-controls="nav-comment" aria-selected="false">商品評論</button>
+        <button class="nav-link" id="nav-more-product-tab" data-bs-toggle="tab" data-bs-target="#nav-more-product" type="button" role="tab" aria-controls="nav-more-product" aria-selected="false">其他商品</button>
     </div>
 </nav>
-<div class="tab-content" id="nav-tabContent">
-    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">@Html.Raw(Model.Description)</div>
-    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">...</div>
-    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
+<div class="tab-content mt-4" id="nav-tabContent" style="min-height: 300px">
+    <div class="tab-pane fade show active" id="nav-intro" role="tabpanel" aria-labelledby="nav-intro-tab">
+            @if (Model.Description != null)
+            {
+                <div>
+                    @Html.Raw(Model.Description)
+                </div>
+            }
+            else
+            {
+                <div class="flex-center flex-column">
+                    <p>暫無商品介紹</p>
+                </div>
+            }
+    </div>
+    <div class="tab-pane fade" id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab">
+        <form method="post" id="comment-form" asp-action="AddComment" asp-route-Id="@Model.Id">
+            <div class="row">
+                <div class="form-group">
+                    <div class="d-flex">
+                        <img class="mx-3 rounded-5" width="50" height="50" src="@user?.AvatarImageSrc" />
+                        <div>
+                            <textarea class="form-control" type="text"
+                                    rows="2" cols="50" placeholder="@(user == null ? "請先登入再進行評論" : $"以 {user.Nickname} 的身分進行評論")" name="content"></textarea>
+                            <div class="d-flex">
+                                <div class="rating">
+                                    <input type="hidden" id="rating-value" name="rating" value="0">
+                                    <input type="radio" name="rate" id="rate-5" data-value="5">
+                                    <label for="rate-5" class="fas fa-star"></label>
+                                    <input type="radio" name="rate" id="rate-4" data-value="4">
+                                    <label for="rate-4" class="fas fa-star"></label>
+                                    <input type="radio" name="rate" id="rate-3" data-value="3">
+                                    <label for="rate-3" class="fas fa-star"></label>
+                                    <input type="radio" name="rate" id="rate-2" data-value="2">
+                                    <label for="rate-2" class="fas fa-star"></label>
+                                    <input type="radio" name="rate" id="rate-1" data-value="1">
+                                    <label for="rate-1" class="fas fa-star"></label>
+                                </div>
+                                <input class="btn btn-primary mt-2" style="margin-left: auto" type="submit" value="送出" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <p class="alert-light mt-4">共 @Model.Comments.Count 則留言</p>
+        <div class="mt-2">
+            <partial name="_ProductCommentPartial" model="Model.Comments" />
+        </div>
+    </div>
+    <div class="tab-pane fade" id="nav-more-product" role="tabpanel" aria-labelledby="nav-more-product-tab">
+        @*===產品內容===*@
+        <div id="product-content" class="card-columns row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-4"></div>
+    </div>
 </div>
+
+<style>
+    #comment-form .rating {
+        direction: rtl;
+    }
+
+    #comment-form .rating input {
+        display: none;
+    }
+
+    #comment-form .rating label {
+        font-size: 25px;
+        color: #444;
+        padding: 10px 0px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    #comment-form input:not(:checked) ~ label:hover,
+    #comment-form input:not(:checked) ~ label:hover ~ label {
+        color: #fd4;
+    }
+
+    #comment-form input:checked ~ label {
+        color: #fd4;
+    }
+
+    #comment-form input#rate-5:checked ~ label {
+        color: #fe7;
+        text-shadow: 0 0 5px #FFD2B2;
+    }
+</style>
+
+<script>
+    $(function () {
+        function loadProductContent() {
+            $.ajax({
+                url: '/Home/GetMoreProducts',
+                type: 'GET',
+                success: function (data) {
+                    $('#product-content').append(data);
+                }
+            });
+        }
+
+        // 監聽滾動事件
+        $(window).scroll(function () {
+            if (!$('#nav-more-product-tab').hasClass('active')) return;
+            if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+                // 當滾動到頁面底部時
+                loadProductContent(); // 載入更多內容
+            }
+        });
+
+        var generated = false;
+        // 當點擊其他商品時，生成商品內容
+        $('#nav-more-product-tab').on('click', function () {
+            if (generated) return;
+            generated = true;
+            loadProductContent();
+        });
+
+        $('.comment-action-btn').click(function () {
+            var result = confirm('是否要刪除該評論?');
+            if (!result) return;
+            var closestForm = $(this).closest('form');
+            closestForm.attr('action', '/Details/' + $(this).data('action') + '/' + closestForm.data('id'));
+            $(closestForm).submit();
+        });
+
+        $('.rating input').click(function () {
+            var value = parseInt($(this).attr('data-value'));
+            console.log(value);
+            $('#rating-value').val(value);
+        });
+    });
+</script>

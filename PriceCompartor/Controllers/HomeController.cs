@@ -24,13 +24,7 @@ namespace PriceCompartor.Controllers
 
         public IActionResult Index()
         {
-            List<Product> products = _context.Products
-                .OrderBy(p => Guid.NewGuid())
-                .Take(60)
-                .Include(p => p.Categories)
-                .Include(p => p.Platforms).ToList();
-
-            return View(products);
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -38,9 +32,9 @@ namespace PriceCompartor.Controllers
         {
             List<Product> products = _context.Products
                 .OrderBy(p => Guid.NewGuid())
-                .Take(60)
-                .Include(p => p.Categories)
-                .Include(p => p.Platforms).ToList();
+                .Take(30)
+                .Include(p => p.Category)
+                .Include(p => p.Platform).ToList();
 
             return PartialView("_ProductCardPartial", products);
         }

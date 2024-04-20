@@ -25,10 +25,10 @@
                 @Html.DisplayNameFor(model => model.Sales)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Categories!.Name)
+                @Html.DisplayNameFor(model => model.Category!.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Platforms!.Name)
+                @Html.DisplayNameFor(model => model.Platform!.Name)
             </th>
             <th></th>
         </tr>
@@ -52,10 +52,10 @@
                         @Html.DisplayFor(model => product.Sales)
                     </td>
                     <td>
-                        @Html.DisplayFor(model => product.Categories!.Name)
+                        @Html.DisplayFor(model => product.Category!.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(model => product.Platforms!.Name)
+                        @Html.DisplayFor(model => product.Platform!.Name)
                     </td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-success btn-sm">Edit</a>

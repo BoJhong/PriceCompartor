@@ -20,5 +20,7 @@ namespace PriceCompartor.Infrastructure
         public DbSet<Product> Products { get; set; }
 
         public DbSet<Platform> Platforms { get; set; }
+
+        public DbSet<Comment> Comments { get; set; }
     }
 }

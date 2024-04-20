@@ -13,7 +13,14 @@
                         </div>
                     </a>
                     <div class="text-danger fw-bold">@product.Price.ToString("C0")</div>
-                    <div class="text-primary mb-2" style="font-size: 0.8rem;">總銷量>@product.Sales</div>
+                    <div class="text-info mb-2" style="font-size: 0.8rem;">總銷量>@product.Sales</div>
+                    <div class="text-primary mb-2" style="font-size: 0.8rem;">
+                        @for (int i = 1; i < 6; i++)
+                        {
+                            <i class="fa-solid fa-star @(i <= @product.Rating ? "text-warning" : "text-muted")"></i>
+                        }
+                        <span>@product.Rating <span class="text-muted">(共 @product.TotalRatingCount 人評分)</span></span>
+                    </div>
                     <div class="text-center">
                         <div class="btn-group">
                             <a class="btn btn-primary btn-sm" href="@product.Link" target="_blank" style="width: 31px; background:url(@Url.Action("GetPlatformImage", "Home",new { id=product.PlatformId})) no-repeat center center; background-size: cover"></a>

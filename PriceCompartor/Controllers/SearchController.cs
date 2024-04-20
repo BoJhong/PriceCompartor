@@ -50,7 +50,19 @@ namespace PriceCompartor.Controllers
                 }
                 else
                 {
+                    // 更新商品資訊
+                    existingProduct.Name = product.Name;
+                    existingProduct.Price = product.Price;
+                    existingProduct.ImageUrl = product.ImageUrl;
+                    existingProduct.Sales = product.Sales;
+
                     _context.Products.Update(existingProduct);
+
+                    // 將評分資訊帶回爬蟲結果
+                    product.Id = existingProduct.Id;
+                    product.Rating = existingProduct.Rating;
+                    product.TotalRating = existingProduct.TotalRating;
+                    product.TotalRatingCount = existingProduct.TotalRatingCount;
                 }
             }
             await _context.SaveChangesAsync();

@@ -20,28 +20,29 @@ namespace PriceCompartor.Models
 
         public int Sales { get; set; } = 0;
 
-        public int Rating { get; set; } = 0;
-
         public string? Address { get; set; }
 
         public string? OId { get; set; }
 
+        public virtual List<Comment> Comments { get; set; } = new List<Comment>();
+
+        // 所有評分的加總
+        public long TotalRating { get; set; } = 0;
+
+        // 評分的總數
+        public long TotalRatingCount { get; set; } = 0;
+
+        // 評分的平均值
+        public float Rating { get; set; } = 0;
+
         [ForeignKey("Categories")]
         public int? CategoryId { get; set; }
 
-        public virtual Category? Categories { get; set; }
+        public virtual Category? Category { get; set; }
 
         [ForeignKey("Platforms")]
         public required int PlatformId { get; set; }
 
-        public virtual Platform? Platforms { get; set; }
-
-        public string PlatformImageSrc
-        {
-            get
-            {
-                return Platforms?.ImageSrc ?? string.Empty;
-            }
-        }
+        public virtual Platform? Platform { get; set; }
     }
 }

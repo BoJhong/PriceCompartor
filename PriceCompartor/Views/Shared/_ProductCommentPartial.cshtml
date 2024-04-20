@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<PriceCompartor.Models.Comment>?
+@inject UserManager<ApplicationUser> UserManager
+@{
+    var user = await UserManager.GetUserAsync(User);
+    bool isAdmin = false;
+    if (user != null)
+    {
+        isAdmin = await UserManager.IsInRoleAsync(user, "Admin");
+    }
+}
+@if (Model != null && Model.Any())
+{
+    @foreach (var comment in Model)
+    {
+        <div class="d-flex mt-4">
+            <img class="mx-3 rounded-5" width="50" height="50" src="@comment.AppUser?.AvatarImageSrc" />
+            <div class="col p-3 rounded" style="background-color: #f8f9fa">
+                <p>
+                    <span class="font-weight-bold">@comment.AppUser?.Nickname</span>
+                    <span class="text-muted">． @comment.Time</span>
+                </p>
+                <p>@comment.Content</p>
+                <div class="d-flex justify-content-between">
+                    <div class="comment-rating">
+                        @for (int i = 1; i < 6; i++)
+                        {
+                            <i class="fa-solid fa-star @(i <= @comment.Rating ? "text-warning" : "text-muted")"></i>
+                        }
+                    </div>
+                    @if (user != null && (isAdmin || comment.AppUserId == user?.Id))
+                    {
+                        <form id="comment-action-form" data-id="@comment.ProductId" method="post">
+                            <input type="hidden" id="commentId" name="commentId" value="@comment.Id" />
+
+                            <a class="comment-action-btn text-danger" data-action="RemoveComment" style="cursor: pointer">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}

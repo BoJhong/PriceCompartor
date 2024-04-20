@@ -41,8 +41,8 @@ namespace PriceCompartor.Controllers
                         : _context.Products.Where(p => p.CategoryId == null)
                     : _context.Products
             )
-            .Include(p => p.Categories)
-            .Include(p => p.Platforms).ToList();
+            .Include(p => p.Category)
+            .Include(p => p.Platform).ToList();
 
             const int pageSize = 60;
 

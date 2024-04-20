@@ -1,5 +1,4 @@
-﻿@model IEnumerable<PriceCompartor.Models.Product>
-@{
+﻿@{
     ViewData["Title"] = "首頁";
 
     Pager pager = new Pager();
@@ -40,9 +39,8 @@
     </button>
 </div>
 
-<div id="product-content" class="card-columns row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-4">
-    <partial name="_ProductCardPartial" model=Model />
-</div>
+@*===商品內容===*@
+<div id="product-content" class="card-columns row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-4"></div>
 
 <script>
     $(function () {
@@ -63,5 +61,7 @@
                 loadProductContent(); // 載入更多內容
             }
         });
+
+        loadProductContent();
     });
 </script>

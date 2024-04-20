@@ -24,8 +24,8 @@ namespace PriceCompartor.Areas.Admin.Controllers
         public IActionResult Index()
         {
             var products = _context.Products
-                .Include(p => p.Categories)
-                .Include(p => p.Platforms);
+                .Include(p => p.Category)
+                .Include(p => p.Platform);
             return View(products);
         }
 

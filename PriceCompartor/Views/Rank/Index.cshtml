@@ -1,22 +1,32 @@
 ﻿@model List<Product>
 
-<div class="container-fluid">
-    <h4>商品排行榜</h4>
+<h4 class="text-center">商品排行榜</h4>
+<hr />
+<div class="flex-center flex-column mt-4">
     @foreach (var product in Model)
     {
-        <div class="card mb-3" style="max-width: 540px;">
+        <div class="card mb-3 w-100" style="max-width: 1000px;">
             <div class="row g-0">
                 <div class="col-md-4">
-                    <img src="@product.ImageUrl" class="img-fluid rounded-start object-fit-cover h-100" alt="...">
+                    <img src="@product.ImageUrl" class="img-fluid rounded-start object-fit-cover w-100 ratio ratio-1x1" alt="..." style="height: 250px">
                 </div>
                 <div class="col-md-8">
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column h-100">
                         <h5 class="card-title">@product.Name</h5>
                         <div class="card-text text-danger fw-bold">@product.Price.ToString("C0")</div>
                         <div class="card-text text-primary mb-2" style="font-size: 0.8rem;">總銷量>@product.Sales</div>
-                        <a type="button" class="btn btn-primary btn-sm" href="@product.Link">前往購買</a>
-                        <a class="btn btn-info btn-sm" asp-controller="Details" asp-action="Index" asp-route-id="@product.Id"><i class="fa-regular fa-eye"></i></a>
-                        <a class="btn btn-success btn-sm" asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id"><i class="fa-solid fa-cart-shopping"></i></a>
+                        <div class="text-primary mb-2" style="font-size: 0.8rem;">
+                            @for (int i = 1; i < 6; i++)
+                            {
+                                <i class="fa-solid fa-star @(i <= @product.Rating ? "text-warning" : "text-muted")"></i>
+                            }
+                            <span>@product.Rating <span class="text-muted">(共 @product.TotalRatingCount 人評分)</span></span>
+                        </div>
+                        <div style="margin: auto 0 0 auto">
+                            <a type="button" class="btn btn-primary" href="@product.Link">前往購買</a>
+                            <a class="btn btn-info" asp-controller="Details" asp-action="Index" asp-route-id="@product.Id"><i class="fa-regular fa-eye"></i></a>
+                            <a class="btn btn-success" asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id"><i class="fa-solid fa-cart-shopping"></i></a>
+                        </div>
                     </div>
                 </div>
             </div>

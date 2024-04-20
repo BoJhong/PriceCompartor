@@ -2,11 +2,13 @@
 using PriceCompartor.Infrastructure.Validation;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Hosting;
 
 namespace PriceCompartor.Models
 {
     public class ApplicationUser : IdentityUser
     {
+        [StringLength(20)]
         public required string Nickname { get; set; }
 
         public GenderType Gender { get; set; }
@@ -34,8 +36,18 @@ namespace PriceCompartor.Models
         {
             get
             {
-                string mimeType = ImageMimeType ?? "image/png";
-                string base64 = Convert.ToBase64String(AvatarImage ?? new byte[0]);
+                if (AvatarImage == null || ImageMimeType == null)
+                {
+                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/default_avatar.png");
+                    using (var fs = new FileStream(path, FileMode.Open))
+                    {
+                        AvatarImage = new byte[fs.Length];
+                        fs.Read(AvatarImage, 0, AvatarImage.Length);
+                        ImageMimeType = "image/png";
+                    }
+                }
+                string mimeType = ImageMimeType;
+                string base64 = Convert.ToBase64String(AvatarImage!);
                 return $"data:{mimeType};base64,{base64}";
             }
         }
@@ -44,6 +56,9 @@ namespace PriceCompartor.Models
         [FileExtension(["jpg", "jpeg", "png"])]
         [FileSize(1024 * 1024)]
         public IFormFile? AvatarImageUpload { get; set; }
+
+        [InverseProperty("AppUser")]
+        public List<Comment> Comments { get; set; } = new List<Comment>();
     }
 
     public enum GenderType

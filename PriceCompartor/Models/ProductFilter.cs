@@ -33,35 +33,32 @@ namespace PriceCompartor.Models
                     products = products.Where(p => p.Price <= filterOptions.MaxPrice).ToList();
                 }
 
-                if (filterOptions.SelectedSortOrder != null)
+                switch (filterOptions.SelectedSortOrder)
                 {
-                    switch (filterOptions.SelectedSortOrder)
-                    {
-                        case SortOrderType.PriceAsc:
-                            products = products.OrderBy(p => p.Price).ToList();
-                            break;
-                        case SortOrderType.PriceDesc:
-                            products = products.OrderByDescending(p => p.Price).ToList();
-                            break;
-                        case SortOrderType.NameAsc:
-                            products = products.OrderBy(p => p.Name).ToList();
-                            break;
-                        case SortOrderType.NameDesc:
-                            products = products.OrderByDescending(p => p.Name).ToList();
-                            break;
-                        case SortOrderType.RatingAsc:
-                            products = products.OrderBy(p => p.Rating).ToList();
-                            break;
-                        case SortOrderType.RatingDesc:
-                            products = products.OrderByDescending(p => p.Rating).ToList();
-                            break;
-                        case SortOrderType.SalesAsc:
-                            products = products.OrderBy(p => p.Sales).ToList();
-                            break;
-                        case SortOrderType.SalesDesc:
-                            products = products.OrderByDescending(p => p.Sales).ToList();
-                            break;
-                    }
+                    case SortOrderType.PriceAsc:
+                        products = products.OrderBy(p => p.Price).ToList();
+                        break;
+                    case SortOrderType.PriceDesc:
+                        products = products.OrderByDescending(p => p.Price).ToList();
+                        break;
+                    case SortOrderType.NameAsc:
+                        products = products.OrderBy(p => p.Name).ToList();
+                        break;
+                    case SortOrderType.NameDesc:
+                        products = products.OrderByDescending(p => p.Name).ToList();
+                        break;
+                    case SortOrderType.RatingAsc:
+                        products = products.OrderBy(p => p.Rating).ToList();
+                        break;
+                    case SortOrderType.RatingDesc:
+                        products = products.OrderByDescending(p => p.Rating).ToList();
+                        break;
+                    case SortOrderType.SalesAsc:
+                        products = products.OrderBy(p => p.Sales).ToList();
+                        break;
+                    case SortOrderType.SalesDesc:
+                        products = products.OrderByDescending(p => p.Sales).ToList();
+                        break;
                 }
 
                 if (filterOptions.PlatformCheckboxes != null)
