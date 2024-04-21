@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PriceCompartor.Infrastructure;
-using PriceCompartor.Models;
 
 namespace PriceCompartor.Controllers
 {
-    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
     public class RankController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -16,7 +14,7 @@ namespace PriceCompartor.Controllers
 
         public IActionResult Index()
         {
-            if (_context.Products.Count() == 0) return View(new List<Product>());
+            if (_context.Products.Count() == 0) return View();
 
             // 取得銷量和評分人數的最大值
             var maxSales = _context.Products.Max(p => p.Sales);

@@ -1,5 +1,4 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -9,7 +8,6 @@ using PriceCompartor.Models.ViewModels;
 
 namespace PriceCompartor.Controllers
 {
-    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
     public class SearchController : Controller
     {
         private readonly ApplicationDbContext _context;

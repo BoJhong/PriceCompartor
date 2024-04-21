@@ -8,7 +8,6 @@ using System.Diagnostics;
 
 namespace PriceCompartor.Controllers
 {
-    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

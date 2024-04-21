@@ -4,11 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PriceCompartor.Controllers
 {
-    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
     public class DetailsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -41,7 +39,7 @@ namespace PriceCompartor.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddComment(int id, string content, int rating = 0)
+        public async Task<IActionResult> AddComment(int id, string? content, int rating = 0)
         {
             if (ModelState.IsValid)
             {
@@ -100,11 +98,18 @@ namespace PriceCompartor.Controllers
 
                 _context.Remove(comment);
 
-                product.TotalRating -= comment.Rating;
-                product.TotalRatingCount--;
-                product.Rating = product.TotalRatingCount != 0
-                    ? product.TotalRating / product.TotalRatingCount
-                    : 0;
+                if (product.TotalRatingCount > 0 && product.TotalRating > 0)
+                {
+                    product.TotalRatingCount--;
+                    product.TotalRating -= comment.Rating;
+                    product.Rating = product.TotalRating / product.TotalRatingCount;
+                }
+                else
+                {
+                    product.TotalRatingCount = 0;
+                    product.TotalRating = 0;
+                    product.Rating = 0;
+                }
 
                 _context.Update(product);
 

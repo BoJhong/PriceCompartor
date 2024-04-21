@@ -7,7 +7,7 @@
             <div class="card h-100">
                 <img src="@product.ImageUrl" class="card-img-top object-fit-cover" style="height:190px;">
                 <div class="card-body">
-                    <a href="@product.Link" target="_blank">
+                    <a class="text-primary" asp-controller="Details" asp-action="Index" asp-route-id="@product.Id">
                         <div class="card-title title-truncation" style="font-size: 0.9rem; height: 2.5rem;">
                             @product.Name
                         </div>

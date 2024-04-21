@@ -21,7 +21,7 @@ namespace PriceCompartor.Models
         public int Rating { get; set; }
 
         [StringLength(1000)]
-        public required string Content { get; set; }
+        public string? Content { get; set; }
 
         public DateTime Time { get; set; }
     }

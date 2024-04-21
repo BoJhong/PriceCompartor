@@ -7,7 +7,6 @@ using PriceCompartor.Models.ViewModels;
 
 namespace PriceCompartor.Controllers
 {
-    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _context;

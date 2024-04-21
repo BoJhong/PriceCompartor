@@ -93,7 +93,19 @@ namespace PriceCompartor.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 UnloadCategoriesAndPlatforms();
-                _context.Products.Update(model);
+
+                var existingProduct = _context.Products.Find(model.Id);
+                if (existingProduct == null)
+                {
+                    return NotFound();
+                }
+
+                model.TotalRatingCount = existingProduct.TotalRatingCount;
+                model.TotalRating = existingProduct.TotalRating;
+                model.Rating = existingProduct.Rating;
+
+                _context.Entry(existingProduct).CurrentValues.SetValues(model);
+
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
