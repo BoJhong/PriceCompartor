@@ -98,10 +98,11 @@ namespace PriceCompartor.Controllers
 
                 _context.Remove(comment);
 
+                product.TotalRatingCount--;
+                product.TotalRating -= comment.Rating;
+
                 if (product.TotalRatingCount > 0 && product.TotalRating > 0)
                 {
-                    product.TotalRatingCount--;
-                    product.TotalRating -= comment.Rating;
                     product.Rating = product.TotalRating / product.TotalRatingCount;
                 }
                 else
