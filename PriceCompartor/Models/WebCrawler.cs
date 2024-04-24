@@ -193,7 +193,10 @@ namespace PriceCompartor.Models
 
                     var products = new List<Product>();
 
-                    if (int.Parse(json["totalRows"]!.ToString()) == 0) return null;
+                    if (int.Parse(json["totalRows"]!.ToString()) == 0 || json["prods"] == null)
+                    {
+                        return null;
+                    }
 
                     foreach (JObject item in json["prods"]!)
                     {
