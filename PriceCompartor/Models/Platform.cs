@@ -27,16 +27,6 @@ namespace PriceCompartor.Models
             }
         }
 
-        public string ImageSrc
-        {
-            get
-            {
-                string mimeType = ImageMimeType ?? "image/png";
-                string base64 = Convert.ToBase64String(PhotoFile ?? new byte[0]);
-                return $"data:{mimeType};base64,{base64}";
-            }
-        }
-
         [NotMapped]
         [FileExtension(["jpg", "jpeg", "png"])]
         [FileSize(1024 * 1024)]

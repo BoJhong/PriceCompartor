@@ -23,7 +23,7 @@
                     </div>
                     <div class="text-center">
                         <div class="btn-group">
-                            <a class="btn btn-primary btn-sm" href="@product.Link" target="_blank" style="width: 31px; background:url(@Url.Action("GetPlatformImage", "Home",new { id=product.PlatformId})) no-repeat center center; background-size: cover"></a>
+                            <a class="btn btn-primary btn-sm" href="@product.Link" target="_blank" style="width: 31px; background:url(@Url.Action("GetPlatformImage", "Home",new { id=product.PlatformId })) no-repeat center center; background-size: cover"></a>
                             <a class="btn btn-info btn-sm" asp-controller="Details" asp-action="Index" asp-route-id="@product.Id"><i class="fa-regular fa-eye"></i></a>
                             <a class="btn btn-success btn-sm" asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id"><i class="fa-solid fa-cart-shopping"></i></a>
                         </div>

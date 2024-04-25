@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models.ViewModels;
 

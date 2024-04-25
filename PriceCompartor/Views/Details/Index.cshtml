@@ -85,7 +85,7 @@
                                     rows="2" cols="50" placeholder="@(user == null ? "請先登入再進行評論" : $"以 {user.Nickname} 的身分進行評論")" name="content"></textarea>
                             <div class="d-flex">
                                 <div class="rating">
-                                    <input type="hidden" id="rating-value" name="rating" value="0">
+                                    <input type="hidden" id="rating-value" name="rating" value="1">
                                     <input type="radio" name="rate" id="rate-5" data-value="5">
                                     <label for="rate-5" class="fas fa-star"></label>
                                     <input type="radio" name="rate" id="rate-4" data-value="4">
@@ -94,7 +94,7 @@
                                     <label for="rate-3" class="fas fa-star"></label>
                                     <input type="radio" name="rate" id="rate-2" data-value="2">
                                     <label for="rate-2" class="fas fa-star"></label>
-                                    <input type="radio" name="rate" id="rate-1" data-value="1">
+                                    <input type="radio" name="rate" id="rate-1" data-value="1" checked >
                                     <label for="rate-1" class="fas fa-star"></label>
                                 </div>
                                 <input class="btn btn-primary mt-2" style="margin-left: auto" type="submit" value="送出" />

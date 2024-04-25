@@ -36,6 +36,28 @@ namespace PriceCompartor.Controllers
             return View(product);
         }
 
+        [NonAction]
+        private Product UpdateProductRating(Product product)
+        {
+            if (product.TotalRatingCount > 0 && product.TotalRating > 0)
+            {
+                // 計算評分平均值
+                product.Rating = (float)product.TotalRating / product.TotalRatingCount;
+
+                // 捨去小數點第一位後面的數字
+                product.Rating = (float)Math.Floor(product.Rating * 10) / 10;
+            }
+            else
+            {
+                // 只要有其中一個評分的數值異常（低於0），則直接全部重設為0
+                product.TotalRatingCount = 0;
+                product.TotalRating = 0;
+                product.Rating = 0;
+            }
+
+            return product;
+        }
+
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -46,8 +68,11 @@ namespace PriceCompartor.Controllers
                 if (rating < 1 || rating > 5) return BadRequest();
 
                 var user = await _userManager.GetUserAsync(User);
+
                 if (user == null) return NotFound();
+
                 var product = _context.Products.FirstOrDefault(p => p.Id == id);
+
                 if (product == null) return NotFound();
 
                 var comment = new Comment()
@@ -63,12 +88,8 @@ namespace PriceCompartor.Controllers
 
                 product.TotalRating += rating;
                 product.TotalRatingCount++;
-                product.Rating = product.TotalRatingCount != 0
-                    ? (float)product.TotalRating / product.TotalRatingCount
-                    : 0;
+                product = UpdateProductRating(product);
             
-                // 捨去小數點第一位後面的數字
-                product.Rating = (float)Math.Floor(product.Rating * 10) / 10;
 
                 _context.Update(product);
 
@@ -86,8 +107,11 @@ namespace PriceCompartor.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(User);
+
                 if (user == null) return NotFound();
+
                 var product = _context.Products.FirstOrDefault(p => p.Id == id);
+
                 if (product == null) return NotFound();
 
                 var comment = _context.Comments.FirstOrDefault(c => c.Id == commentId && c.ProductId == id);
@@ -100,17 +124,7 @@ namespace PriceCompartor.Controllers
 
                 product.TotalRatingCount--;
                 product.TotalRating -= comment.Rating;
-
-                if (product.TotalRatingCount > 0 && product.TotalRating > 0)
-                {
-                    product.Rating = product.TotalRating / product.TotalRatingCount;
-                }
-                else
-                {
-                    product.TotalRatingCount = 0;
-                    product.TotalRating = 0;
-                    product.Rating = 0;
-                }
+                product = UpdateProductRating(product);
 
                 _context.Update(product);
 

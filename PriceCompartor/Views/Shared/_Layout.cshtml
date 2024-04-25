@@ -50,24 +50,22 @@
             </div>
         </nav>
     </header>
-    <div class="custom-container">
-        <main role="main" class="pb-3" style="padding-top: 77px;">
-            <div class="d-flex flex-column flex-md-row row-gap-4 column-gap-4">
-                <div style="min-width:250px;">
-                    <vc:small-cart />
+    <div class="custom-container" style="margin-bottom: 60px">
+        <main role="main" class="pb-3 d-flex flex-column flex-md-row row-gap-4 column-gap-4" style="padding-top: 77px;">
+            <div style="min-width:250px;">
+                <vc:small-cart />
 
-                    <hr />
+                <hr />
 
-                    <vc:filter />
+                <vc:filter />
 
-                    <hr />
+                <hr />
 
-                    <vc:categories />
-                </div>
-                <div class="col">
-                    <partial name="_NotificationPartial" />
-                    @RenderBody()
-                </div>
+                <vc:categories />
+            </div>
+            <div class="col">
+                <partial name="_NotificationPartial" />
+                @RenderBody()
             </div>
         </main>
     </div>

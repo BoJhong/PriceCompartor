@@ -22,16 +22,20 @@ html {
   min-height: 100%;
 }
 
-body {
-  margin-bottom: 60px;
+a {
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}
+
+.card {
+    transition: border-color ease-in-out 0.2s;
 }
 
 .card:hover {
     border-color: #78c2ad;
-}
-
-.card a {
-    text-decoration: none;
 }
 
 .table > tbody > tr > td {
@@ -86,17 +90,23 @@ a:link {
 }
 
 #banner .carousel-item {
+    background-color: #eeeeee;
     height: 300px;
 }
 
 #banner .carousel-item img {
-    position: absolute;
-    object-fit: cover;
-    top: 0;
-    left: 0;
+    object-fit: contain;
     height: 300px;
 }
 
 .badge-primary {
     background-color: #f3969a;
+}
+
+.navbar .nav-item a {
+    color: #ffffff8c;
+}
+
+.navbar .nav-item a:hover {
+    color: white;
 }

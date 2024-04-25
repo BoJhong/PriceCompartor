@@ -1,4 +1,6 @@
-﻿namespace PriceCompartor.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PriceCompartor.Models
 {
     public class CartItem
     {
