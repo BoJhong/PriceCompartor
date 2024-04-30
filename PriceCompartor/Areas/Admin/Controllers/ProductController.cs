@@ -3,8 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
+using NuGet.Packaging;
+using OpenAI_API;
+using OpenAI_API.Chat;
+using OpenAI_API.Completions;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
+using System.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PriceCompartor.Areas.Admin.Controllers
 {
@@ -14,19 +21,35 @@ namespace PriceCompartor.Areas.Admin.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMemoryCache _cache;
+        private readonly string? _apiKey;
 
         public ProductController(ApplicationDbContext context, IMemoryCache memoryCache)
         {
             _context = context;
             _cache = memoryCache;
+            _apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
             var products = _context.Products
                 .Include(p => p.Category)
-                .Include(p => p.Platform);
-            return View(products);
+                .Include(p => p.Platform)
+                .ToList();
+
+            const int pageSize = 10;
+
+            if (page < 1) page = 1;
+
+            var pager = new Pager(products.Count(), page, pageSize);
+
+            int recSkip = (page - 1) * pageSize;
+
+            var data = products.Skip(recSkip).Take(pager.PageSize).ToList();
+
+            ViewBag.Pager = pager;
+
+            return View(data);
         }
 
         [HttpGet]
@@ -158,5 +181,80 @@ namespace PriceCompartor.Areas.Admin.Controllers
             _cache.Remove("ProductCounts");
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public IActionResult Sort()
+        {
+            return View();
+        }
+
+        [HttpPost, ActionName("Sort")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SortConfirmed()
+        {
+            GeminiTextRequest geminiTextRequest = new GeminiTextRequest();
+
+            var uncategorizedProducts = _context.Products.Where(p => p.CategoryId == null).Select(p => new { p.Id, p.Name }).ToList();
+            string categories = JsonConvert.SerializeObject(_context.Categories.Select(p => new { p.Id, p.Name }).ToList());
+
+            while (uncategorizedProducts.Count > 0)
+            {
+                List<Task> tasks = new List<Task>();
+
+                int takeCount = Math.Min(10, uncategorizedProducts.Count());
+                if (takeCount == 0) break;
+                string products = JsonConvert.SerializeObject(uncategorizedProducts.Take(takeCount).ToList());
+                uncategorizedProducts.RemoveRange(0, takeCount);
+
+                string prompt = string.Format(@"
+                Please help me categorize all my products.
+
+                Categories:
+                {0}
+
+                Products:
+                {1}
+
+
+                IMPORTANT: The output should be a JSON array of multiple titles without field names. Just the titles! Make Sure the JSON is valid.
+                
+                ", categories, products);
+
+                prompt += @"
+                Example Output:
+                [
+                    { CategoryId: ""CategoryId"", CategoryName: ""CategoryName"", ProductId: ""ProductId"", ProductName: ""ProductName"" },
+                    { CategoryId: ""CategoryId"", CategoryName: ""CategoryName"", ProductId: ""ProductId"", ProductName: ""ProductName"" },
+                    { CategoryId: ""CategoryId"", CategoryName: ""CategoryName"", ProductId: ""ProductId"", ProductName: ""ProductName"" }
+                ]
+                ";
+
+                GeminiTextResponse geminiTextResponse = await geminiTextRequest.SendMsg(prompt);
+
+                if (geminiTextResponse == null) continue;
+
+                string? responseText = geminiTextResponse.candidates?[0].content.parts[0].text;
+
+                if (responseText == null) continue;
+
+                List<SortModel>? result = JsonExtractor.ExtractJson<SortModel>(responseText);
+
+                if (result == null) continue;
+
+                foreach (SortModel sortModel in result)
+                {
+                    var product = _context.Products.Find(sortModel.ProductId);
+                    if (product == null) continue;
+                    product.CategoryId = sortModel.CategoryId;
+                    _context.Products.Update(product);
+                }
+
+                _context.SaveChanges();
+                _cache.Remove("ProductCounts");
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
+

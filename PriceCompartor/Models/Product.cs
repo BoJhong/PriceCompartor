@@ -16,8 +16,10 @@ namespace PriceCompartor.Models
 
         public string? Description { get; set; }
 
+        [Range(1, int.MaxValue, ErrorMessage = "價格必須是正整數")]
         public required int Price { get; set; }
 
+        [Range(0, int.MaxValue, ErrorMessage = "銷售量必須是正整數")]
         public int Sales { get; set; } = 0;
 
         public string? Address { get; set; }

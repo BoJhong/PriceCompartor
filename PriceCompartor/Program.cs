@@ -2,8 +2,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
+using PriceCompartor.Models.GeminiModels;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<GeminiOptions>(builder.Configuration.GetSection("Gemini"));
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("SalesDb")
