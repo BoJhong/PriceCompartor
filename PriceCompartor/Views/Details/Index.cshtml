@@ -55,6 +55,7 @@
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <button class="nav-link active" id="nav-intro-tab" data-bs-toggle="tab" data-bs-target="#nav-intro" type="button" role="tab" aria-controls="nav-intro" aria-selected="true">商品介紹</button>
+        <button class="nav-link" id="nav-ai-analysis-tab" data-bs-toggle="tab" data-bs-target="#nav-ai-analysis" type="button" role="tab" aria-controls="nav-ai-analysis" aria-selected="false">AI分析</button>
         <button class="nav-link" id="nav-comment-tab" data-bs-toggle="tab" data-bs-target="#nav-comment" type="button" role="tab" aria-controls="nav-comment" aria-selected="false">商品評論</button>
         <button class="nav-link" id="nav-more-product-tab" data-bs-toggle="tab" data-bs-target="#nav-more-product" type="button" role="tab" aria-controls="nav-more-product" aria-selected="false">其他商品</button>
     </div>
@@ -73,6 +74,14 @@
                     <p>暫無商品介紹</p>
                 </div>
             }
+    </div>
+    <div class="tab-pane fade" id="nav-ai-analysis" role="tabpanel" aria-labelledby="nav-ai-analysis-tab">
+        <div class="d-flex gap-4">
+            <img class="avatar" src="~/img/ai_avatar.jpg" />
+            <div class="ai-analysis-content p-4 bg-light d-flex flex-column rounded" style="min-height: 200px; min-width: 300px">
+                <div id="loader" class="m-auto" style="width: 100px; height: 100px"></div>
+            </div>
+        </div>
     </div>
     <div class="tab-pane fade" id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab">
         <form method="post" id="comment-form" asp-action="AddComment" asp-route-Id="@Model.Id">
@@ -149,12 +158,30 @@
 
 <script>
     $(function () {
+        var animation = bodymovin.loadAnimation({
+            container: document.getElementById('loader'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: '@Url.Content("~/svg/loader.json")'
+        });
+
+        $.ajax({
+            url: '@Url.Action("GetAIAnalysis", "Details", new { area = "", id = Model.Id })',
+            type: 'GET',
+            success: function (markdownText) {
+                var converter = new showdown.Converter();
+                var htmlContent = converter.makeHtml(markdownText);
+                $('.ai-analysis-content').html(htmlContent);
+            }
+        });
+
         function loadProductContent() {
             $.ajax({
-                url: '/Home/GetMoreProducts',
+                url: '@Url.Action("GetMoreProducts", "Home", new { area = "" })',
                 type: 'GET',
                 success: function (data) {
-                    $('#product-content').append(data);
+                    $('#product-content').prepend(data);
                 }
             });
         }
@@ -168,11 +195,8 @@
             }
         });
 
-        var generated = false;
         // 當點擊其他商品時，生成商品內容
-        $('#nav-more-product-tab').on('click', function () {
-            if (generated) return;
-            generated = true;
+        $('#nav-more-product-tab').one('click', function () {
             loadProductContent();
         });
 

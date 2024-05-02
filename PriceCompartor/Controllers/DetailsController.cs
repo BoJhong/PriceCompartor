@@ -22,7 +22,7 @@ namespace PriceCompartor.Controllers
         {
             if (id == null) return NotFound();
 
-            var product = _context.Products
+            Product? product = _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Platform)
                 .Include(p => p.Comments)
@@ -67,15 +67,15 @@ namespace PriceCompartor.Controllers
             {
                 if (rating < 1 || rating > 5) return BadRequest();
 
-                var user = await _userManager.GetUserAsync(User);
+                ApplicationUser? user = await _userManager.GetUserAsync(User);
 
                 if (user == null) return NotFound();
 
-                var product = _context.Products.FirstOrDefault(p => p.Id == id);
+                Product? product = _context.Products.FirstOrDefault(p => p.Id == id);
 
                 if (product == null) return NotFound();
 
-                var comment = new Comment()
+                Comment comment = new()
                 {
                     Id = Guid.NewGuid().ToString(),
                     Time = DateTime.Now,
@@ -133,5 +133,73 @@ namespace PriceCompartor.Controllers
 
             return RedirectToAction("Index", new { id });
         }
+
+        [HttpGet]
+        public async Task<string?> GetAIAnalysis(int id)
+        {
+            Product? product = _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Platform)
+                .Include(p => p.Comments)
+                    .ThenInclude(c => c.AppUser)
+                .FirstOrDefault(p => p.Id == id);
+
+            if (product == null) return null;
+
+            string commentsStr = $"[{
+                string.Join(@"\r\n",
+                    product.Comments
+                        .FindAll(c => !string.IsNullOrEmpty(c.Content))
+                        .Select(c => $"評論者：\"{c.AppUser?.Nickname ?? "無名稱"}\"，評分：{c.Rating}，評論內容：\"{c.Content ?? "無"}\"")
+                )
+            }]";
+            string prompt = string.Format(@"
+# 角色
+你是一位精通於分析商品與提供詳盡購物資訊的專家。 你有能力深入探討商品的細節，並從中分析價格與提供最佳的購買建議。
+
+## 技能
+### 產品詳述
+- 透過產品連結 {1} 了解並研究商品 {2} 的規格與功能特性。
+- 提供商品的詳細規格與特性介紹，避免與規格表的重複，讓使用者更清楚產品的特性。
+
+### 購買建議
+- 根據評價 {4}，整合商品的特性、使用者的需求與市場狀況，提供使用者專業的購買建議。
+
+### 價格分析
+- 分析商品 {2} 在電商平台 {0} 的價格 {3} 與官方網站價格是否相符。 當官方價格無法確認時，以市場潮流與商品特性為基礎，為使用者提供價值評估。
+- 比較官方網站與電商平台 {0} 間的差異，以及提供如何降低購買風險、取得最大利益的策略。
+
+## 限制條件：
+- 維持中立客觀的立場，只提供基於數據分析的建議，不涉及商品推銷。
+- 遵從消費者權益保護法，提醒用戶比較購物並理性消費。
+- 繁體中文是你的主要語言
+
+以這樣的方式，你的主要任務是在確保所有提供的資訊準確無誤的同時，為使用者提供最詳細、最合理的商品購買資訊與建議。
+            ", product.Platform?.Name, product.Link, product.Name, product.Price, commentsStr);
+
+            WebCrawler webCrawler = new(_context);
+            if (product.OId != null)
+            {
+                List<PriceHistroy> priceHistory = await webCrawler.GetPriceHistory(product.OId);
+                if (priceHistory.Count > 0)
+                {
+                    string priceHistoryStr = string.Join(@"\r\n", priceHistory.Select(p => $"日期：{p.DateTime}，價格：{p.Price}"));
+                    prompt += $@"
+                        歷史90天價格浮動：{priceHistoryStr}
+                    ";
+                }
+            }
+
+            GeminiTextRequest geminiTextRequest = new GeminiTextRequest();
+            GeminiTextResponse geminiTextResponse = await geminiTextRequest.SendMsg(prompt);
+
+            if (geminiTextResponse == null) return null;
+
+            string? responseText = geminiTextResponse.candidates?[0].content.parts[0].text;
+
+            if (responseText == null) return null;
+
+            return responseText;
+        } 
     }
 }

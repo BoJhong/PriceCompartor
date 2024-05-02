@@ -40,7 +40,7 @@
         <a class="list-group-item @(isCategory && ViewData["SelectedCategory"]?.ToString() == category.Id.ToString() ? "active" : "")" asp-area="" asp-controller="Category" asp-action="Index" asp-route-id="@category.Id">
             <div class="nav-link w-100 d-flex justify-content-between align-items-center">
                 <div>
-                    <img src="@Url.Action("GetCategoryImage", "Home",new { id= category.Id })" width="24" height="24" class="object-fit-cover rounded" />
+                    <img src="@Url.Action("GetCategoryImage", "Home", new { area = "", id= category.Id })" width="24" height="24" class="object-fit-cover rounded" />
                     @category.Name
                 </div>
                 <span class="badge badge-primary rounded-pill">@(Model.ProductCounts?.ContainsKey(category.Id) == true ? Model.ProductCounts?[category.Id] : 0)</span>

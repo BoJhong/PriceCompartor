@@ -18,7 +18,10 @@ namespace PriceCompartor.Models
         public async Task<List<Product>> GetProducts(string keyword, int page)
         {
             keyword = System.Web.HttpUtility.UrlEncode(keyword);
-            Task<List<Product>?>[] tasks = { ScrapeMomoAsync(keyword, page), ScrapePCHomeAsync(keyword, page) };
+            Task<List<Product>?>[] tasks = {
+                ScrapeMomoAsync(keyword, page),
+                ScrapePCHomeAsync(keyword, page)
+            };
             List<Product>?[] result = await Task.WhenAll(tasks);
             List<Product> products = new List<Product>();
             foreach (var item in result)
@@ -31,6 +34,9 @@ namespace PriceCompartor.Models
 
         public async Task<List<Product>?> ScrapeShopeeAsync(string keyword, int pg)
         {
+            var shopeePlatform = _context.Platforms.FirstOrDefault(p => p.Name == "Shopee");
+            if (shopeePlatform == null) return null;
+
             var playwright = await Playwright.CreateAsync();
             var browser = await playwright.Firefox.LaunchAsync(new BrowserTypeLaunchOptions
             {
@@ -44,9 +50,6 @@ namespace PriceCompartor.Models
             var page = await context.NewPageAsync();
             var url = $"https://shopee.tw/search?keyword={keyword}";
             await page.GotoAsync(url);
-
-            var shopeePlatform = _context.Platforms.FirstOrDefault(p => p.Name == "蝦皮");
-            if (shopeePlatform == null) return null;
 
             try
             {

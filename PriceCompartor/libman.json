@@ -24,24 +24,23 @@
       ]
     },
     {
+      "library": "sticky-sidebar@3.3.1",
+      "destination": "wwwroot/lib/sticky-sidebar/"
+    },
+    {
       "library": "Chart.js@4.4.1",
       "destination": "wwwroot/lib/Chart.js/"
     },
     {
-      "library": "sticky-sidebar@3.3.1",
-      "destination": "wwwroot/lib/sticky-sidebar/"
+      "library": "showdown@2.1.0",
+      "destination": "wwwroot/lib/showdown/"
+    },
+    {
+      "library": "bodymovin@5.12.2",
+      "destination": "wwwroot/bodymovin/",
+      "files": [
+        "lottie.min.js"
+      ]
     }
-  ,
-{
-  "provider": "cdnjs",
-  "library": "Chart.js@4.4.1",
-  "destination": "wwwroot/Chart.js/"
-}
-,
-{
-  "provider": "cdnjs",
-  "library": "Chart.js@4.4.1",
-  "destination": "wwwroot/lib/Chart.js/"
-}
-]
+  ]
 }

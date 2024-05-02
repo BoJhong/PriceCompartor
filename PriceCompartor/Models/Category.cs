@@ -19,12 +19,10 @@ namespace PriceCompartor.Models
 
         public async Task SetImageDataAsync(IFormFile file)
         {
-            using (var memoryStream = new MemoryStream())
-            {
-                await file.CopyToAsync(memoryStream);
-                PhotoFile = memoryStream.ToArray();
-                ImageMimeType = file.ContentType;
-            }
+            using var memoryStream = new MemoryStream();
+            await file.CopyToAsync(memoryStream);
+            PhotoFile = memoryStream.ToArray();
+            ImageMimeType = file.ContentType;
         }
 
         [NotMapped]

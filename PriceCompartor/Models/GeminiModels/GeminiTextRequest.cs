@@ -7,7 +7,7 @@ namespace PriceCompartor.Models
     {
         public List<Content> contents { get; set; } = new List<Content>();
 
-        public async Task<GeminiTextResponse> SendMsg(string msg)
+        public async Task<GeminiTextResponse> SendMsg(string msg, bool stream = false)
         {
             GeminiTextRequest geminiTextRequest = new();
             contents.Add(
@@ -20,7 +20,9 @@ namespace PriceCompartor.Models
 
             geminiTextRequest.contents = contents;
 
-            GeminiTextResponse geminiTextResponse = await PostAsync<GeminiTextRequest, GeminiTextResponse>(geminiTextRequest, $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key={ApiKeys[ApiKeyCycle]}");
+            string stringQuery = stream ? "streamGenerateContent" : "generateContent";
+
+            GeminiTextResponse geminiTextResponse = await PostAsync<GeminiTextRequest, GeminiTextResponse>(geminiTextRequest, $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:{stringQuery}?key={ApiKeys[ApiKeyCycle]}");
 
             ApiKeyCycle = ++ApiKeyCycle % ApiKeys.Length;
 

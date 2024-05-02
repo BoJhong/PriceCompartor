@@ -72,7 +72,7 @@ namespace PriceCompartor.Areas.Admin.Controllers
             {
                 if (platform.ImageUpload != null)
                 {
-                    string[] allowedTypes = { "image/jpg", "image/jpeg", "image/png" };
+                    string[] allowedTypes = { "image/jpeg", "image/png" };
                     if (!allowedTypes.Contains(platform.ImageUpload.ContentType))
                     {
                         ModelState.AddModelError("PhotoFile", "只允許上傳 JPG、JPEG 和 PNG 格式的圖片。");

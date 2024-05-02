@@ -194,31 +194,38 @@ namespace PriceCompartor.Areas.Admin.Controllers
         {
             GeminiTextRequest geminiTextRequest = new GeminiTextRequest();
 
-            var uncategorizedProducts = _context.Products.Where(p => p.CategoryId == null).Select(p => new { p.Id, p.Name }).ToList();
-            string categories = JsonConvert.SerializeObject(_context.Categories.Select(p => new { p.Id, p.Name }).ToList());
+            var uncategorizedProducts = _context.Products
+                .Where(p => p.CategoryId == null)
+                .Select(p => new { p.Id, p.Name })
+                .ToList();
+
+            string categories = JsonConvert.SerializeObject(
+                _context.Categories.Select(p => new { p.Id, p.Name })
+                .ToList()
+            );
 
             while (uncategorizedProducts.Count > 0)
             {
-                List<Task> tasks = new List<Task>();
+                List<Task> tasks = [];
 
                 int takeCount = Math.Min(10, uncategorizedProducts.Count());
                 if (takeCount == 0) break;
                 string products = JsonConvert.SerializeObject(uncategorizedProducts.Take(takeCount).ToList());
                 uncategorizedProducts.RemoveRange(0, takeCount);
 
-                string prompt = string.Format(@"
+                string prompt = $@"
                 Please help me categorize all my products.
 
                 Categories:
-                {0}
+                {categories}
 
                 Products:
-                {1}
+                {products}
 
 
                 IMPORTANT: The output should be a JSON array of multiple titles without field names. Just the titles! Make Sure the JSON is valid.
                 
-                ", categories, products);
+                ";
 
                 prompt += @"
                 Example Output:
