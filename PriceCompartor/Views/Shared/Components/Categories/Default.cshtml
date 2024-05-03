@@ -2,16 +2,10 @@
 <ul class="list-group">
     @{
         bool isCategory = ViewContext.RouteData.Values["Controller"]?.ToString() == "Category";
-        /*
-        Microsoft.Extensions.Primitives.StringValues categoryIdVal;
-        Context.Request.Query.TryGetValue("categoryId", out categoryIdVal);
-
-        var categoryId = categoryIdVal != Microsoft.Extensions.Primitives.StringValues.Empty
-        ? int.Parse(categoryIdVal.ToString()!)
-        : -1;
-        */
+        string? selectedCategoryId = ViewData["SelectedCategory"]?.ToString();
     }
-    <a class="list-group-item @(isCategory && ViewData["SelectedCategory"]?.ToString() == null ? "active" : "")" asp-area="" asp-controller="Category" asp-action="Index" asp-route-id="">
+
+    <a class="list-group-item @(isCategory && selectedCategoryId == null ? "active" : "")" asp-area="" asp-controller="Category" asp-action="Index" asp-route-id="">
         <div class="nav-link w-100 d-flex justify-content-between align-items-center">
             <div>
                 All Products
@@ -19,31 +13,25 @@
             <span class="badge badge-primary rounded-pill">@Model.ProductCounts?[-1]</span>
         </div>
     </a>
-    <a class="list-group-item @(isCategory && ViewData["SelectedCategory"]?.ToString() == "0" ? "active" : "")" asp-area="" asp-controller="Category" asp-action="Index" asp-route-id="0">
+    <a class="list-group-item @(isCategory && selectedCategoryId == "0" ? "active" : "")" asp-area="" asp-controller="Category" asp-action="Index" asp-route-id="0">
         <div class="nav-link w-100 d-flex justify-content-between align-items-center">
             <div>
                 Uncategorized
             </div>
-            @if (Model.ProductCounts != null && Model.ProductCounts.Count > 0 && Model.ProductCounts.ContainsKey(0))
-            {
-                <span class="badge badge-primary rounded-pill">@Model.ProductCounts[0]</span>
-            }
-            else
-            {
-                <span class="badge badge-primary rounded-pill">0</span>
-            }
+            <span class="badge badge-primary rounded-pill">@Model.ProductCounts?.GetValueOrDefault(0)</span>
         </div>
     </a>
 
     @foreach (var category in Model.Categories)
     {
-        <a class="list-group-item @(isCategory && ViewData["SelectedCategory"]?.ToString() == category.Id.ToString() ? "active" : "")" asp-area="" asp-controller="Category" asp-action="Index" asp-route-id="@category.Id">
+        var isActive = isCategory && selectedCategoryId == category.Id.ToString();
+        <a class="list-group-item @(isActive ? "active" : "")" asp-area="" asp-controller="Category" asp-action="Index" asp-route-id="@category.Id">
             <div class="nav-link w-100 d-flex justify-content-between align-items-center">
                 <div>
                     <img src="@Url.Action("GetCategoryImage", "Home", new { area = "", id= category.Id })" width="24" height="24" class="object-fit-cover rounded" />
                     @category.Name
                 </div>
-                <span class="badge badge-primary rounded-pill">@(Model.ProductCounts?.ContainsKey(category.Id) == true ? Model.ProductCounts?[category.Id] : 0)</span>
+                <span class="badge badge-primary rounded-pill">@Model.ProductCounts?.GetValueOrDefault(category.Id, 0)</span>
             </div>
         </a>
     }

@@ -5,18 +5,11 @@ using PriceCompartor.Models.ViewModels;
 
 namespace PriceCompartor.Controllers
 {
-    public class CartController : Controller
+    public class CartController(ApplicationDbContext context) : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public CartController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
         public IActionResult Index()
         {
-            List<CartItem> cart = HttpContext.Session.GetJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+            List<CartItem> cart = HttpContext.Session.GetJson<List<CartItem>>("Cart") ?? [];
 
             CartViewModel cartVM = new()
             {
@@ -29,13 +22,13 @@ namespace PriceCompartor.Controllers
 
         public IActionResult Add(long id)
         {
-            Product? product = _context.Products.Find(id);
+            Product? product = context.Products.Find(id);
             if (product == null)
             {
                 return RedirectToAction("Index");
             }
 
-            List<CartItem> cart = HttpContext.Session.GetJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+            List<CartItem> cart = HttpContext.Session.GetJson<List<CartItem>>("Cart") ?? [];
 
             CartItem? cartItem = cart.FirstOrDefault(x => x.ProductId == id);
             if (cartItem == null)
@@ -56,7 +49,7 @@ namespace PriceCompartor.Controllers
 
         public IActionResult Decrease(long id)
         {
-            List<CartItem> cart = HttpContext.Session.GetJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+            List<CartItem> cart = HttpContext.Session.GetJson<List<CartItem>>("Cart") ?? [];
 
             CartItem? cartItem = cart.FirstOrDefault(x => x.ProductId == id);
             if (cartItem == null)
@@ -88,7 +81,7 @@ namespace PriceCompartor.Controllers
 
         public IActionResult Remove(long id)
         {
-            List<CartItem> cart = HttpContext.Session.GetJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+            List<CartItem> cart = HttpContext.Session.GetJson<List<CartItem>>("Cart") ?? [];
 
             CartItem? cartItem = cart.FirstOrDefault(x => x.ProductId == id);
             if (cartItem != null)

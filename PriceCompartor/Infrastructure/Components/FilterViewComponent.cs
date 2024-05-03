@@ -5,16 +5,10 @@ using PriceCompartor.Models.ViewModels;
 
 namespace PriceCompartor.Infrastructure.Components
 {
-    public class FilterViewComponent : ViewComponent
+    public class FilterViewComponent(ApplicationDbContext context, IMemoryCache memoryCache) : ViewComponent
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IMemoryCache _cache;
-
-        public FilterViewComponent(ApplicationDbContext context, IMemoryCache memoryCache)
-        {
-            _context = context;
-            _cache = memoryCache;
-        }
+        private readonly ApplicationDbContext _context = context;
+        private readonly IMemoryCache _cache = memoryCache;
 
         public IViewComponentResult Invoke()
         {
@@ -25,7 +19,7 @@ namespace PriceCompartor.Infrastructure.Components
             {
                 if (!_cache.TryGetValue("DefaultPlatformCheckboxes", out List<SelectListItem>? defaultPlatformCheckboxes))
                 {
-                    defaultPlatformCheckboxes = _context.Platforms.Select(p => new SelectListItem { Text = p.Name, Value = p.Id.ToString(), Selected = true }).ToList();
+                    defaultPlatformCheckboxes = [.. _context.Platforms.Select(p => new SelectListItem { Text = p.Name, Value = p.Id.ToString(), Selected = true })];
                     _cache.Set("DefaultPlatformCheckboxes", defaultPlatformCheckboxes, TimeSpan.FromHours(1));
                 }
 

@@ -9,7 +9,7 @@ namespace PriceCompartor.Models
         {
             // This pattern matches a string that starts with '{' and ends with '}'
             string pattern = @"\{[^{}]*\}";
-            List<T> jsonObjects = new List<T>();
+            List<T> jsonObjects = [];
 
             MatchCollection matches = Regex.Matches(textResponse, pattern);
             foreach (Match match in matches)

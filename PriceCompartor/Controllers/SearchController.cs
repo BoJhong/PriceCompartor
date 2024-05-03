@@ -5,7 +5,6 @@ using Microsoft.Extensions.Caching.Memory;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
 using PriceCompartor.Models.ViewModels;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PriceCompartor.Controllers
 {

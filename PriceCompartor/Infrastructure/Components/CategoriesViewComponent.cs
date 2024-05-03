@@ -5,16 +5,10 @@ using PriceCompartor.Models.ViewModels;
 
 namespace PriceCompartor.Infrastructure.Components
 {
-    public class CategoriesViewComponent : ViewComponent
+    public class CategoriesViewComponent(ApplicationDbContext context, IMemoryCache memoryCache) : ViewComponent
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IMemoryCache _cache;
-
-        public CategoriesViewComponent(ApplicationDbContext context, IMemoryCache memoryCache)
-        {
-            _context = context;
-            _cache = memoryCache;
-        }
+        private readonly ApplicationDbContext _context = context;
+        private readonly IMemoryCache _cache = memoryCache;
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
@@ -22,9 +16,10 @@ namespace PriceCompartor.Infrastructure.Components
             if (!_cache.TryGetValue("ProductCounts", out Dictionary<int, int>? productCounts))
             {
                 // 如果快取中不存在產品數量數據，則從資料庫中查詢並快取數據
-                productCounts = _context.Products
+                productCounts = await _context.Products
                     .GroupBy(p => p.CategoryId ?? 0)
-                    .ToDictionary(g => g.Key, g => g.Count());
+                    .Select(g => new { CategoryId = g.Key, Count = g.Count() })
+                    .ToDictionaryAsync(x => x.CategoryId, x => x.Count);
 
                 productCounts[-1] = await _context.Products.CountAsync();
 
@@ -33,6 +28,7 @@ namespace PriceCompartor.Infrastructure.Components
             }
 
             var categories = await _context.Categories.Include(c => c.Products).ToListAsync();
+
             return View(new CategoriesViewModel {
                 ProductCounts = productCounts,
                 Categories = categories

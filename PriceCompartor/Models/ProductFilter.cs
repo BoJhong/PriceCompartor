@@ -35,6 +35,16 @@ namespace PriceCompartor.Models
                 products = products.Where(p => p.Price <= filterOptions.MaxPrice);
             }
 
+            List<string>? selectedPlatformIds = filterOptions.PlatformCheckboxes?
+                .Where(pc => pc.Selected)
+                .Select(pc => pc.Value)
+                .ToList();
+
+            if (selectedPlatformIds != null && selectedPlatformIds.Any())
+            {
+                products = products.Where(p => selectedPlatformIds.Contains(p.PlatformId.ToString()));
+            }
+
             switch (filterOptions.SelectedSortOrder)
             {
                 case SortOrderType.PriceAsc:
@@ -61,12 +71,6 @@ namespace PriceCompartor.Models
                 case SortOrderType.SalesDesc:
                     products = products.OrderByDescending(p => p.Sales);
                     break;
-            }
-
-            if (filterOptions.PlatformCheckboxes != null && filterOptions.PlatformCheckboxes.Any(pc => pc.Selected))
-            {
-                var selectedPlatformIds = filterOptions.PlatformCheckboxes.Where(pc => pc.Selected).Select(pc => pc.Value);
-                products = products.Where(p => selectedPlatformIds.Contains(p.PlatformId.ToString()));
             }
 
             return products;

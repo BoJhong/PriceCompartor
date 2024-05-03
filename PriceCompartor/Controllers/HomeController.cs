@@ -9,19 +9,8 @@ using System.Diagnostics;
 namespace PriceCompartor.Controllers
 {
     [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
-    public class HomeController : Controller
+    public class HomeController(ApplicationDbContext context, IMemoryCache cache) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _context;
-        private readonly IMemoryCache _cache;
-
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IMemoryCache memoryCache)
-        {
-            _logger = logger;
-            _context = context;
-            _cache = memoryCache;
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Index()
         {
@@ -29,13 +18,22 @@ namespace PriceCompartor.Controllers
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult GetMoreProducts()
+        public async Task<IActionResult> GetMoreProducts()
         {
-            List<Product> products = _context.Products
+            int productCount;
+            if (cache.TryGetValue("ProductCounts", out Dictionary<int, int>? productCounts))
+            {
+                productCount = productCounts![-1];
+            } else
+            {
+                productCount = await context.Products.CountAsync();
+            }
+
+            List<Product> products = [.. context.Products
                 .OrderBy(p => Guid.NewGuid())
                 .Take(30)
                 .Include(p => p.Category)
-                .Include(p => p.Platform).ToList();
+                .Include(p => p.Platform)];
 
             return PartialView("_ProductCardPartial", products);
         }
@@ -53,7 +51,7 @@ namespace PriceCompartor.Controllers
 
         public FileContentResult? GetPlatformImage(int id)
         {
-            var photo = _context.Platforms.Find(id);
+            var photo = context.Platforms.Find(id);
             if (photo != null && photo.PhotoFile != null && photo.ImageMimeType != null)
             {
                 return File(photo.PhotoFile, photo.ImageMimeType);
@@ -64,7 +62,7 @@ namespace PriceCompartor.Controllers
 
         public FileContentResult? GetCategoryImage(int id)
         {
-            var photo = _context.Categories.Find(id);
+            var photo = context.Categories.Find(id);
             if (photo != null && photo.PhotoFile != null && photo.ImageMimeType != null)
             {
                 return File(photo.PhotoFile, photo.ImageMimeType);

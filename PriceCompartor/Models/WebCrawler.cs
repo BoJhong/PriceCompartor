@@ -6,29 +6,28 @@ using System.Text.RegularExpressions;
 
 namespace PriceCompartor.Models
 {
-    public class WebCrawler
+    public class WebCrawler(ApplicationDbContext context)
     {
-        private readonly ApplicationDbContext _context;
-
-        public WebCrawler(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         public async Task<IQueryable<Product>> GetProducts(string keyword, int page)
         {
             keyword = System.Web.HttpUtility.UrlEncode(keyword);
-            Task<List<Product>?>[] tasks = {
+
+            Task<List<Product>?>[] tasks = [
                 ScrapeMomoAsync(keyword, page),
                 ScrapePCHomeAsync(keyword, page)
-            };
+            ];
+
             List<Product>?[] result = await Task.WhenAll(tasks);
-            List<Product> products = new List<Product>();
+            List<Product> products = [];
+
             foreach (var item in result)
             {
                 if (item == null) continue;
                 products.AddRange(item);
             }
+
             return products.AsQueryable();
         }
 

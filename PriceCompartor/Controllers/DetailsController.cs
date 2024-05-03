@@ -9,22 +9,13 @@ using PriceCompartor.Models.GeminiModels;
 
 namespace PriceCompartor.Controllers
 {
-    public class DetailsController : Controller
+    public class DetailsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private UserManager<ApplicationUser> _userManager { get; }
-
-        public DetailsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
-        {
-            _context = context;
-            _userManager = userManager;
-        }
-
         public IActionResult Index(int? id)
         {
             if (id == null) return NotFound();
 
-            Product? product = _context.Products
+            Product? product = context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Platform)
                 .Include(p => p.Comments)
@@ -33,7 +24,7 @@ namespace PriceCompartor.Controllers
 
             if (product == null) return NotFound();
 
-            product.Comments = product.Comments.OrderBy(c => c.Time).ToList();
+            product.Comments = [.. product.Comments.OrderBy(c => c.Time)];
 
             return View(product);
         }
@@ -69,11 +60,11 @@ namespace PriceCompartor.Controllers
             {
                 if (rating < 1 || rating > 5) return BadRequest();
 
-                ApplicationUser? user = await _userManager.GetUserAsync(User);
+                ApplicationUser? user = await userManager.GetUserAsync(User);
 
                 if (user == null) return NotFound();
 
-                Product? product = _context.Products.FirstOrDefault(p => p.Id == id);
+                Product? product = context.Products.FirstOrDefault(p => p.Id == id);
 
                 if (product == null) return NotFound();
 
@@ -86,16 +77,16 @@ namespace PriceCompartor.Controllers
                     ProductId = id,
                     AppUserId = user.Id
                 };
-                _context.Add(comment);
+                context.Add(comment);
 
                 product.TotalRating += rating;
                 product.TotalRatingCount++;
                 product = UpdateProductRating(product);
             
 
-                _context.Update(product);
+                context.Update(product);
 
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
 
             return RedirectToAction("Index", new { id });
@@ -108,29 +99,30 @@ namespace PriceCompartor.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.GetUserAsync(User);
+                var user = await userManager.GetUserAsync(User);
 
                 if (user == null) return NotFound();
 
-                var product = _context.Products.FirstOrDefault(p => p.Id == id);
+                var product = context.Products.FirstOrDefault(p => p.Id == id);
 
                 if (product == null) return NotFound();
 
-                var comment = _context.Comments.FirstOrDefault(c => c.Id == commentId && c.ProductId == id);
+                var comment = context.Comments.FirstOrDefault(c => c.Id == commentId && c.ProductId == id);
 
-                bool isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+                bool isAdmin = await userManager.IsInRoleAsync(user, "Admin");
 
+                // 如果找不到評論，並且不是自己發的評論也不是管理員，則取消操作
                 if (comment == null || (!isAdmin && comment.AppUserId != user.Id)) return NotFound();
 
-                _context.Remove(comment);
+                context.Remove(comment);
 
                 product.TotalRatingCount--;
                 product.TotalRating -= comment.Rating;
                 product = UpdateProductRating(product);
 
-                _context.Update(product);
+                context.Update(product);
 
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
 
             return RedirectToAction("Index", new { id });
@@ -139,7 +131,7 @@ namespace PriceCompartor.Controllers
         [HttpPost]
         public async Task GetAIAnalysis(int id)
         {
-            Product? product = _context.Products
+            Product? product = context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Platform)
                 .Include(p => p.Comments)
@@ -149,46 +141,44 @@ namespace PriceCompartor.Controllers
             if (product == null) return;
 
             string commentsStr = $"[{
-                string.Join(@"\r\n",
+                string.Join("\n",
                     product.Comments
                         .FindAll(c => !string.IsNullOrEmpty(c.Content))
-                        .Select(c => $"評論者：\"{c.AppUser?.Nickname ?? "無名稱"}\"，評分：{c.Rating}/5，評論內容：\"{c.Content ?? "無"}\"")
+                        .Select(c => $"評論者：\"{c.AppUser?.Nickname ?? "無名稱"}\"，評分：\"{c.Rating}/5\"，評論內容：\"{c.Content ?? "無"}\"")
                 )
             }]";
             string prompt = string.Format(@"
 # 角色
-你是一位精通於分析商品與提供詳盡購物資訊的專家。 你有能力深入探討商品的細節，並從中分析價格與提供最佳的購買建議。
+你是一位在商品分析和購物資訊提供方面精通的專家。你有能力深入探討商品的細節，并從中提供有關價格和建議的詳細購買資訊。
 
 ## 技能
-### 產品詳述
-- 透過產品連結 {1} 了解並研究商品 {2} 的規格與功能特性。
-- 提供商品的詳細規格與特性介紹，避免與規格表的重複，讓使用者更清楚產品的特性。
+### 技能 1: 商品詳細介紹
+- 兩組数据 {1} 和 {2} 將用於瞭解和研究商品的規格和功能特點
+- 將產品的規格和特點詳細地介紹給用戶。
 
-### 購買建議
-- 根據評價 {4}，整合商品的特性、使用者的需求與市場狀況，提供使用者專業的購買建議。
+### 技能 2: 購買建議
+- 根據評論 {4}，將商品特點、用戶需求和市場狀況整合後，提出專業購買建議。
 
-### 價格分析
-- 分析商品 {2} 在電商平台 {0} 的價格 {3} 與官方網站價格是否相符。 當官方價格無法確認時，以市場潮流與商品特性為基礎，為使用者提供價值評估。
-- 比較官方網站與電商平台 {0} 間的差異，以及提供如何降低購買風險、取得最大利益的策略。
+### 技能 3: 價格分析
+- 為用戶提供商品 {2} 在電商平台 {0} 的價格分析，將市場趨勢和商品特點作為評價基準。
+- 目前日期是：{5}。如果即將在2個月內舉行慣例的折扣活動，則提供該折扣活動的日期。如果沒有，則不需要提供。
+- 提供策略讓用戶知道如何降低購買風險並獲得最大的利益，並給出建議的購買時間。
 
 ## 限制條件：
-- 維持中立客觀的立場，只提供基於數據分析的建議，不涉及商品推銷。
-- 遵從消費者權益保護法，提醒用戶比較購物並理性消費。
-- 繁體中文是你的主要語言
+- 以中立的立場提供服務，不進行商品銷售。
+- 你的主要語言是繁體中文。
 
-以這樣的方式，你的主要任務是在確保所有提供的資訊準確無誤的同時，為使用者提供最詳細、最合理的商品購買資訊與建議。
-            ", product.Platform?.Name, product.Link, product.Name, product.Price, commentsStr);
+如此，你的兩項主要工作是確保提供的所有資訊準確無誤，並給用戶提供最詳細，最合理的購物資訊和建議。
+            ", product.Platform?.Name, product.Link, product.Name, product.Price, commentsStr, DateTime.Now);
 
-            WebCrawler webCrawler = new(_context);
+            WebCrawler webCrawler = new(context);
             if (product.OId != null)
             {
                 List<PriceHistroy> priceHistory = await webCrawler.GetPriceHistory(product.OId);
                 if (priceHistory.Count > 0)
                 {
                     string priceHistoryStr = string.Join("\n", priceHistory.Select(p => $"日期：{p.DateTime}，價格：{p.Price}"));
-                    prompt += $@"
-                        歷史90天價格浮動：{priceHistoryStr}
-                    ";
+                    prompt += $"\n該商品在該電商平台歷史90天的價格浮動：{priceHistoryStr}";
                 }
             }
 

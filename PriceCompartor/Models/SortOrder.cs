@@ -2,6 +2,7 @@
 {
     public enum SortOrderType
     {
+        None,
         NameAsc,
         NameDesc,
         PriceAsc,
@@ -22,6 +23,7 @@
         {
             return orderByType switch
             {
+                SortOrderType.None => "None",
                 SortOrderType.NameAsc => "Name: A to Z",
                 SortOrderType.NameDesc => "Name: Z to A",
                 SortOrderType.PriceAsc => "Price: Low to High",

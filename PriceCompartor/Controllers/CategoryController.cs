@@ -9,8 +9,6 @@ namespace PriceCompartor.Controllers
 {
     public class CategoryController(ApplicationDbContext context) : Controller
     {
-        private readonly ApplicationDbContext _context = context;
-
         public IActionResult Index(
             bool filterIsValid,
             FilterViewModel model,
@@ -22,7 +20,14 @@ namespace PriceCompartor.Controllers
         {
             if (filterIsValid)
             {
-                model.PlatformCheckboxes = _context.Platforms.Select(p => new SelectListItem { Text = p.Name, Value = p.Id.ToString(), Selected = filter.Contains(p.Id.ToString()) }).ToList();
+                model.PlatformCheckboxes = [.. context.Platforms.Select(p =>
+                    new SelectListItem {
+                        Text = p.Name,
+                        Value = p.Id.ToString(),
+                        Selected = filter.Contains(p.Id.ToString())
+                    }
+                )];
+
                 HttpContext.Session.SetJson("Filter", model);
             }
 
@@ -32,43 +37,39 @@ namespace PriceCompartor.Controllers
         [NonAction]
         private IQueryable<Product> GetProducts(int? id, string? find, int page = 1)
         {
-            ViewData["Categories"] = _context.Categories.ToList();
+            ViewData["Categories"] = context.Categories.ToList();
             ViewData["SelectedCategory"] = id;
 
-            IQueryable<Product> products = _context.Products;
+            IQueryable<Product> products = context.Products;
 
             if (find != null)
             {
                 products = products.Where(p => p.Name.Contains(find));
             }
 
-            if (id.HasValue && id != 0)
+            if (id.HasValue)
             {
-                products = products.Where(p => p.CategoryId == id);
-            }
-            else if (id == 0)
-            {
-                products = products.Where(p => p.CategoryId == null);
+                products = id == 0
+                    ? products.Where(p => p.CategoryId == null)
+                    : products.Where(p => p.CategoryId == id);
             }
 
-            const int pageSize = 60;
-
-            ProductFilter productFilter = new ProductFilter(_context);
-
+            ProductFilter productFilter = new(context);
             products = productFilter.Filter(HttpContext, products);
 
-            if (page < 1) page = 1;
+            // 計算商品總數量
+            int count = products.Count();
 
-            var count = products.Count();
+            // 計算分頁
+            const int pageSize = 60;
+            int recSkip = (page < 1 ? 1 : page - 1) * pageSize;
+            products = products.Skip(recSkip).Take(pageSize);
+
+            // 創建 Pager 對象
             var pager = new Pager(count, page, pageSize);
-
-            int recSkip = (page - 1) * pageSize;
-
-            var data = products.Skip(recSkip).Take(pager.PageSize);
-
             ViewBag.Pager = pager;
 
-            return data;
+            return products;
         }
     }
 }

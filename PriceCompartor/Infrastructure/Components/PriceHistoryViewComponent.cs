@@ -4,16 +4,10 @@ using PriceCompartor.Models;
 
 namespace PriceCompartor.Infrastructure.Components
 {
-    public class PriceHistoryViewComponent : ViewComponent
+    public class PriceHistoryViewComponent(ApplicationDbContext context) : ViewComponent
     {
-        private readonly ApplicationDbContext _context;
-        private readonly WebCrawler _webCrawler;
-
-        public PriceHistoryViewComponent(ApplicationDbContext context)
-        {
-            _context = context;
-            _webCrawler = new WebCrawler(context);
-        }
+        private readonly ApplicationDbContext _context = context;
+        private readonly WebCrawler _webCrawler = new WebCrawler(context);
 
         public async Task<IViewComponentResult> InvokeAsync(long productId)
         {
