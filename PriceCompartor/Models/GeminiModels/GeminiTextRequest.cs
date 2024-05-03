@@ -22,9 +22,10 @@ namespace PriceCompartor.Models
 
             string stringQuery = stream ? "streamGenerateContent" : "generateContent";
 
-            GeminiTextResponse geminiTextResponse = await PostAsync<GeminiTextRequest, GeminiTextResponse>(geminiTextRequest, $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:{stringQuery}?key={ApiKeys[ApiKeyCycle]}");
-
-            ApiKeyCycle = ++ApiKeyCycle % ApiKeys.Length;
+            GeminiTextResponse geminiTextResponse = await PostAsync<GeminiTextRequest, GeminiTextResponse>(
+                geminiTextRequest,
+                $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:{stringQuery}?key={AIHttpClient.GetApiKey()}"
+            );
 
             if (geminiTextResponse != null && geminiTextResponse?.candidates?.Length > 0)
                 contents.Add(geminiTextResponse.candidates[0].content);

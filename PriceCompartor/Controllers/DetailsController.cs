@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using GenerativeAI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
+using PriceCompartor.Models.GeminiModels;
 
 namespace PriceCompartor.Controllers
 {
@@ -134,8 +136,8 @@ namespace PriceCompartor.Controllers
             return RedirectToAction("Index", new { id });
         }
 
-        [HttpGet]
-        public async Task<string?> GetAIAnalysis(int id)
+        [HttpPost]
+        public async Task GetAIAnalysis(int id)
         {
             Product? product = _context.Products
                 .Include(p => p.Category)
@@ -144,7 +146,7 @@ namespace PriceCompartor.Controllers
                     .ThenInclude(c => c.AppUser)
                 .FirstOrDefault(p => p.Id == id);
 
-            if (product == null) return null;
+            if (product == null) return;
 
             string commentsStr = $"[{
                 string.Join(@"\r\n",
@@ -183,23 +185,27 @@ namespace PriceCompartor.Controllers
                 List<PriceHistroy> priceHistory = await webCrawler.GetPriceHistory(product.OId);
                 if (priceHistory.Count > 0)
                 {
-                    string priceHistoryStr = string.Join(@"\r\n", priceHistory.Select(p => $"日期：{p.DateTime}，價格：{p.Price}"));
+                    string priceHistoryStr = string.Join("\\r\\n", priceHistory.Select(p => $"日期：{p.DateTime}，價格：{p.Price}"));
                     prompt += $@"
                         歷史90天價格浮動：{priceHistoryStr}
                     ";
                 }
             }
 
-            GeminiTextRequest geminiTextRequest = new GeminiTextRequest();
-            GeminiTextResponse geminiTextResponse = await geminiTextRequest.SendMsg(prompt);
+            var model = new GenerativeModel(AIHttpClient.GetApiKey(), "gemini-1.5-pro-latest");
+            //or var model = new GeminiProModel(apiKey);
 
-            if (geminiTextResponse == null) return null;
+            var action = new Action<string>(async s =>
+            {
+                /*
+                 * 即使呼叫了 FlushAsync()，Kestrel 會等累積到 1024 Bytes 後才真的送出
+                 * 因此使用 PadRight(1024, ' ') 將輸出內容補空白到 1024 個字元
+                 */
+                await Response.Body.WriteAsync(System.Text.Encoding.UTF8.GetBytes(s.PadRight(1024, ' ')));
+                await Response.Body.FlushAsync();
+            });
 
-            string? responseText = geminiTextResponse.candidates?[0].content.parts[0].text;
-
-            if (responseText == null) return null;
-
-            return responseText;
+            await model.StreamContentAsync(prompt, action);
         } 
     }
 }

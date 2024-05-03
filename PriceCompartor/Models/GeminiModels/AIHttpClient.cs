@@ -17,6 +17,12 @@ namespace PriceCompartor.Models.GeminiModels
             _httpClient = new HttpClient();
         }
 
+        public static string GetApiKey()
+        {
+            ApiKeyCycle = ++ApiKeyCycle % ApiKeys.Length;
+            return ApiKeys[ApiKeyCycle];
+        }
+
         public async Task<ResponseData> PostAsync<RequestData, ResponseData>(RequestData data, string url) where RequestData : class, new() where ResponseData : class, new()
         {
             try

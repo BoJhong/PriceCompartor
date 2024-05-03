@@ -78,7 +78,7 @@
     <div class="tab-pane fade" id="nav-ai-analysis" role="tabpanel" aria-labelledby="nav-ai-analysis-tab">
         <div class="d-flex gap-4">
             <img class="avatar" src="~/img/ai_avatar.jpg" />
-            <div class="ai-analysis-content p-4 bg-light d-flex flex-column rounded" style="min-height: 200px; min-width: 300px">
+            <div class="ai-analysis-content p-4 bg-light d-flex flex-column rounded w-100" style="min-height: 200px">
                 <div id="loader" class="m-auto" style="width: 100px; height: 100px"></div>
             </div>
         </div>
@@ -168,13 +168,25 @@
 
         $.ajax({
             url: '@Url.Action("GetAIAnalysis", "Details", new { area = "", id = Model.Id })',
-            type: 'GET',
-            success: function (markdownText) {
-                var converter = new showdown.Converter();
-                var htmlContent = converter.makeHtml(markdownText);
-                $('.ai-analysis-content').html(htmlContent);
+            type: 'POST',
+            xhrFields: {
+                onprogress: function (e) {
+                    // 處理串流返回的數據
+                    var response = e.target.responseText;
+                    // 更新UI
+                    updateAIAnalisisContent(response);
+                }
+            },
+            success: function (text) {
+                updateAIAnalisisContent(text);
             }
         });
+
+        function updateAIAnalisisContent(text) {
+            var converter = new showdown.Converter();
+            var htmlContent = converter.makeHtml(text);
+            $('.ai-analysis-content').html(htmlContent);
+        }
 
         function loadProductContent() {
             $.ajax({
