@@ -152,7 +152,7 @@ namespace PriceCompartor.Controllers
                 string.Join(@"\r\n",
                     product.Comments
                         .FindAll(c => !string.IsNullOrEmpty(c.Content))
-                        .Select(c => $"評論者：\"{c.AppUser?.Nickname ?? "無名稱"}\"，評分：{c.Rating}，評論內容：\"{c.Content ?? "無"}\"")
+                        .Select(c => $"評論者：\"{c.AppUser?.Nickname ?? "無名稱"}\"，評分：{c.Rating}/5，評論內容：\"{c.Content ?? "無"}\"")
                 )
             }]";
             string prompt = string.Format(@"
@@ -185,7 +185,7 @@ namespace PriceCompartor.Controllers
                 List<PriceHistroy> priceHistory = await webCrawler.GetPriceHistory(product.OId);
                 if (priceHistory.Count > 0)
                 {
-                    string priceHistoryStr = string.Join("\\r\\n", priceHistory.Select(p => $"日期：{p.DateTime}，價格：{p.Price}"));
+                    string priceHistoryStr = string.Join("\n", priceHistory.Select(p => $"日期：{p.DateTime}，價格：{p.Price}"));
                     prompt += $@"
                         歷史90天價格浮動：{priceHistoryStr}
                     ";
@@ -201,7 +201,7 @@ namespace PriceCompartor.Controllers
                  * 即使呼叫了 FlushAsync()，Kestrel 會等累積到 1024 Bytes 後才真的送出
                  * 因此使用 PadRight(1024, ' ') 將輸出內容補空白到 1024 個字元
                  */
-                await Response.Body.WriteAsync(System.Text.Encoding.UTF8.GetBytes(s.PadRight(1024, ' ')));
+                await Response.Body.WriteAsync(System.Text.Encoding.UTF8.GetBytes(s.PadRight(1024, '\0')));
                 await Response.Body.FlushAsync();
             });
 

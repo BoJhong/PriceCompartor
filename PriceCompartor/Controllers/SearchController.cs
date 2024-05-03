@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
 using PriceCompartor.Models.ViewModels;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PriceCompartor.Controllers
 {
@@ -25,7 +26,13 @@ namespace PriceCompartor.Controllers
         {
             if (filterIsValid)
             {
-                model.PlatformCheckboxes = _context.Platforms.Select(p => new SelectListItem { Text = p.Name, Value = p.Id.ToString(), Selected = filter.Contains(p.Id.ToString()) }).ToList();
+                model.PlatformCheckboxes = _context.Platforms
+                    .Select(p => new SelectListItem {
+                        Text = p.Name, Value = p.Id.ToString(),
+                        Selected = filter.Contains(p.Id.ToString())
+                    })
+                    .ToList();
+
                 HttpContext.Session.SetJson("Filter", model);
             }
 
@@ -35,12 +42,12 @@ namespace PriceCompartor.Controllers
         [NonAction]
         private async Task<List<Product>> GetProducts(string? keyword, int page = 1)
         {
-            if (string.IsNullOrEmpty(keyword)) return new List<Product>();
+            if (string.IsNullOrEmpty(keyword)) return [];
 
-            var products = await _webCrawler.GetProducts(keyword, page);
-            foreach (var product in products)
+            IQueryable<Product> query = await _webCrawler.GetProducts(keyword, page);
+            foreach (Product product in query)
             {
-                var existingProduct = await _context.Products.FirstOrDefaultAsync(p => p.Link == product.Link);
+                Product? existingProduct = await _context.Products.FirstOrDefaultAsync(p => p.Link == product.Link);
 
                 if (existingProduct == null)
                 {
@@ -67,7 +74,7 @@ namespace PriceCompartor.Controllers
 
             ProductFilter productFilter = new ProductFilter(_context);
 
-            products = productFilter.Filter(HttpContext, products);
+            query = productFilter.Filter(HttpContext, query);
 
             const int pageSize = 100;
             if (page < 1) page = 1;
@@ -81,7 +88,7 @@ namespace PriceCompartor.Controllers
             // 清除分類數量的緩存
             _cache.Remove("ProductCounts");
 
-            return products;
+            return [.. query];
         }
     }
 }

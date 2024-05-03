@@ -2,6 +2,7 @@
 <div class="text-bg-light mb-3 p-3 rounded">
     <form method="get" id="filter-form" action="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Search" ? "" : Url.Action("Index", "Category", new { area = "" }))">
         <input type="hidden" name="filterIsValid" value="true" />
+        <input type="hidden" name="find" value="@ViewContext.HttpContext.Request.Query["find"]" />
         <input type="hidden" name="keyword" value="@ViewContext.HttpContext.Request.Query["keyword"]" />
         <input type="hidden" name="page" value="@ViewContext.HttpContext.Request.Query["page"]" />
 

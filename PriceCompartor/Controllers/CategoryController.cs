@@ -7,16 +7,18 @@ using PriceCompartor.Models.ViewModels;
 
 namespace PriceCompartor.Controllers
 {
-    public class CategoryController : Controller
+    public class CategoryController(ApplicationDbContext context) : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context = context;
 
-        public CategoryController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public IActionResult Index(bool filterIsValid, FilterViewModel model, string[] filter, int? id, int page = 1)
+        public IActionResult Index(
+            bool filterIsValid,
+            FilterViewModel model,
+            string[] filter,
+            int? id,
+            string? find,
+            int page = 1
+        )
         {
             if (filterIsValid)
             {
@@ -24,24 +26,30 @@ namespace PriceCompartor.Controllers
                 HttpContext.Session.SetJson("Filter", model);
             }
 
-            return View(GetProducts(id, page));
+            return View(GetProducts(id, find, page));
         }
 
         [NonAction]
-        private List<Product> GetProducts(int? id, int page = 1)
+        private IQueryable<Product> GetProducts(int? id, string? find, int page = 1)
         {
             ViewData["Categories"] = _context.Categories.ToList();
             ViewData["SelectedCategory"] = id;
 
-            List<Product> products = (
-                id != null
-                    ? id != 0
-                        ? _context.Products.Where(p => p.CategoryId == id)
-                        : _context.Products.Where(p => p.CategoryId == null)
-                    : _context.Products
-            )
-            .Include(p => p.Category)
-            .Include(p => p.Platform).ToList();
+            IQueryable<Product> products = _context.Products;
+
+            if (find != null)
+            {
+                products = products.Where(p => p.Name.Contains(find));
+            }
+
+            if (id.HasValue && id != 0)
+            {
+                products = products.Where(p => p.CategoryId == id);
+            }
+            else if (id == 0)
+            {
+                products = products.Where(p => p.CategoryId == null);
+            }
 
             const int pageSize = 60;
 
@@ -51,11 +59,12 @@ namespace PriceCompartor.Controllers
 
             if (page < 1) page = 1;
 
-            var pager = new Pager(products.Count(), page, pageSize);
+            var count = products.Count();
+            var pager = new Pager(count, page, pageSize);
 
             int recSkip = (page - 1) * pageSize;
 
-            var data = products.Skip(recSkip).Take(pager.PageSize).ToList();
+            var data = products.Skip(recSkip).Take(pager.PageSize);
 
             ViewBag.Pager = pager;
 

@@ -4,14 +4,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
-using NuGet.Packaging;
-using OpenAI_API;
-using OpenAI_API.Chat;
-using OpenAI_API.Completions;
 using PriceCompartor.Infrastructure;
 using PriceCompartor.Models;
-using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PriceCompartor.Areas.Admin.Controllers
 {
@@ -21,21 +15,26 @@ namespace PriceCompartor.Areas.Admin.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMemoryCache _cache;
-        private readonly string? _apiKey;
 
         public ProductController(ApplicationDbContext context, IMemoryCache memoryCache)
         {
             _context = context;
             _cache = memoryCache;
-            _apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
         }
 
-        public IActionResult Index(int page = 1)
+        public IActionResult Index(string? find, int page = 1)
         {
-            var products = _context.Products
+            IQueryable<Product> query = _context.Products.AsQueryable();
+
+            // 如果尋找關鍵字不為空，則添加 Where 條件
+            query = !string.IsNullOrEmpty(find)
+                ? query.Where(p => p.Name.Contains(find))
+                : query;
+
+            // 在查詢中包含 Category 和 Platform
+            IQueryable<Product> products = query
                 .Include(p => p.Category)
-                .Include(p => p.Platform)
-                .ToList();
+                .Include(p => p.Platform);
 
             const int pageSize = 10;
 

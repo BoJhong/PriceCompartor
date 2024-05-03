@@ -27,7 +27,7 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <form class="d-flex search p-0 rounded" action="@Url.Action("Index", "Search", new { area = "" })" method="get">
-                                <input class="search-input text-dark" type="search" name="keyword" placeholder="Search" aria-label="Search" value="@ViewContext.HttpContext.Request.Query["keyword"]">
+                                <input class="search-input text-dark" type="search" name="keyword" placeholder="在各家購物平台搜尋..." aria-label="Search" value="@ViewContext.HttpContext.Request.Query["keyword"]">
                                 <button class="btn btn-secondary search-btn" type="submit"><i class="fa fa-search p-0"></i></button>
                             </form>
                         </li>
@@ -56,13 +56,9 @@
         <main role="main" class="pb-3 d-flex flex-column flex-md-row row-gap-4 column-gap-4" style="padding-top: 77px;">
             <div style="min-width:250px;">
                 <vc:small-cart />
-
                 <hr />
-
                 <vc:filter />
-
                 <hr />
-
                 <vc:categories />
             </div>
             <div class="col">

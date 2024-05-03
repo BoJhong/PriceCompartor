@@ -174,7 +174,7 @@
                     // 處理串流返回的數據
                     var response = e.target.responseText;
                     // 更新UI
-                    updateAIAnalisisContent(response);
+                    updateAIAnalisisContent(response.trim());
                 }
             },
             success: function (text) {
@@ -193,7 +193,7 @@
                 url: '@Url.Action("GetMoreProducts", "Home", new { area = "" })',
                 type: 'GET',
                 success: function (data) {
-                    $('#product-content').prepend(data);
+                    $('#product-content').append(data);
                 }
             });
         }

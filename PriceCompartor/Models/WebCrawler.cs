@@ -15,7 +15,7 @@ namespace PriceCompartor.Models
             _context = context;
         }
 
-        public async Task<List<Product>> GetProducts(string keyword, int page)
+        public async Task<IQueryable<Product>> GetProducts(string keyword, int page)
         {
             keyword = System.Web.HttpUtility.UrlEncode(keyword);
             Task<List<Product>?>[] tasks = {
@@ -29,7 +29,7 @@ namespace PriceCompartor.Models
                 if (item == null) continue;
                 products.AddRange(item);
             }
-            return products;
+            return products.AsQueryable();
         }
 
         public async Task<List<Product>?> ScrapeShopeeAsync(string keyword, int pg)

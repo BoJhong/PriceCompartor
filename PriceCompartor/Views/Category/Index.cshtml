@@ -1,6 +1,6 @@
-﻿@model List<Product>
+﻿@model IEnumerable<Product>
 @{
-    ViewData["Title"] = "首頁";
+    ViewData["Title"] = "分類";
 
     Pager pager = new Pager();
 
@@ -12,6 +12,14 @@
         pageNo = pager.CurrentPage;
     }
 }
+
+<form method="get" class="my-4 text-center" asp-action="Index">
+    <div class="display-6">搜尋商品</div>
+    <div class="form-group mt-2 d-flex w-100 justify-content-center">
+        <input type="text" name="find" class="form-control" style="width: min(100%, 500px)" value="@ViewContext.HttpContext.Request.Query["find"]" />
+        <input type="submit" value="搜尋" class="btn btn-primary" />
+    </div>
+</form>
 
 <div id="content" class="card-columns row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-4">
     <partial name="_ProductCardPartial" model=Model />
