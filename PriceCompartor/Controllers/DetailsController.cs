@@ -166,7 +166,7 @@ namespace PriceCompartor.Controllers
 
 ## 限制條件：
 - 以中立的立場提供服務，不進行商品銷售。
-- 你的主要語言是繁體中文。
+- 請以繁體中文回答。
 
 如此，你的兩項主要工作是確保提供的所有資訊準確無誤，並給用戶提供最詳細，最合理的購物資訊和建議。
             ", product.Platform?.Name, product.Link, product.Name, product.Price, commentsStr, DateTime.Now);
@@ -191,7 +191,7 @@ namespace PriceCompartor.Controllers
                  * 即使呼叫了 FlushAsync()，Kestrel 會等累積到 1024 Bytes 後才真的送出
                  * 因此使用 PadRight(1024, ' ') 將輸出內容補空白到 1024 個字元
                  */
-                await Response.Body.WriteAsync(System.Text.Encoding.UTF8.GetBytes(s.PadRight(1024, '\0')));
+                await Response.Body.WriteAsync(System.Text.Encoding.UTF8.GetBytes(s.PadRight(1024, '　')));
                 await Response.Body.FlushAsync();
             });
 

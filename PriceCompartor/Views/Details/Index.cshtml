@@ -158,13 +158,44 @@
 
 <script>
     $(function () {
-        var animation = bodymovin.loadAnimation({
+        let animation = bodymovin.loadAnimation({
             container: document.getElementById('loader'),
             renderer: 'svg',
             loop: true,
             autoplay: true,
             path: '@Url.Content("~/svg/loader.json")'
         });
+
+        let timer = null;
+        let index = 0;
+        let textContent = "";
+        let text = "";
+
+        function setTimer(t) {
+            // 去掉佔位符號
+            text = t.replace(/　/g, '');
+
+            if (timer) return;
+            timer = setInterval(function () {
+                let char = text.charAt(index);
+
+                // 將文本的下一個字符添加到內容當中
+                textContent += char;
+
+                // 更新索引
+                index++;
+
+                updateAIAnalisisContent(textContent);
+
+                // 如果所有字都已顯示完成，則清除定時器
+                if (text.length <= index) {
+                    clearInterval(timer);
+                    timer = null;
+                    // 將索引設置在最後一個字的位置，避免index超過導致無法繼續
+                    index = text.length - 1;
+                }
+            }, 20);
+        }
 
         $.ajax({
             url: '@Url.Action("GetAIAnalysis", "Details", new { area = "", id = Model.Id })',
@@ -174,11 +205,11 @@
                     // 處理串流返回的數據
                     var response = e.target.responseText;
                     // 更新UI
-                    updateAIAnalisisContent(response);
+                    setTimer(response);
                 }
             },
             success: function (text) {
-                updateAIAnalisisContent(text);
+                setTimer(text);
             }
         });
 
